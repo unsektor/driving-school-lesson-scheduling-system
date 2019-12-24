@@ -8,7 +8,7 @@ def time_interval_intersects(time_interval_a: datetime.time, time_interval_b: da
     time_start_a, time_end_a = time_interval_a
     time_start_b, time_end_b = time_interval_b
 
-    return (time_start_a <= time_start_b <= time_end_a) or (time_start_b <= time_start_a <= time_end_b)
+    return (time_start_a < time_start_b < time_end_a) or (time_start_b < time_start_a < time_end_b)  # todo test
 
 
 class DateTimeInterval:
@@ -42,19 +42,38 @@ class TimeLaw:
         self.interval: TimeInterval = interval
 
 
+# System
+
+def cycle(iterable: typing.Iterator):
+    while True:
+        for item in iterable:
+            yield item
+
 # Domain
+
 
 class Teacher:
     def __init__(self, name: str):
-        self.name = str
+        self.name = name
         self.students_ = []
+
+    def __repr__(self):
+        return f'Teacher({self.name!s})'
+
+    def add_student(self, student: 'Student'):
+        self.students_.append(student)
 
 
 class Student:
-    def __init__(self, name: str, hours: int = 58):
+    def __init__(self, name: str, hours: int = 12):
         self.name = name
         self.hours = hours
         self.group_ = None
+        self.teacher_ = None
+
+    def assign_teacher(self, teacher: Teacher):
+        self.teacher_ = teacher
+        teacher.add_student(self)
 
     def set_group(self, group: 'Group'):
         self.group_ = group
@@ -63,18 +82,19 @@ class Student:
         return self.group_
 
     def __repr__(self):
-        return f'Student({self.name!s})'
+        # return f'Student({self.name!r}, hours_left={self.hours!r})'
+        return f'Student({self.name!r})'
 
 
 class Group(list):
-    def __init__(self):
+    def __init__(self, start_date: datetime.datetime):
         super().__init__()
 
+        self.start_date = start_date
         self.time_law_list: typing.List[TimeLaw] = []
 
     def add_time_law(self, time_law_list: typing.List[TimeLaw]):
         self.time_law_list.extend(time_law_list)
-
 
 
 # 1. все интервалы времени - справедливые к закономерности относительно
@@ -83,8 +103,13 @@ class Group(list):
 
 
 def get_lesson_time_interval(examination_date: datetime.date, excluded_dates: typing.List[datetime.date]):
-    def get_lesson_time_interval(cursor_datetime):
+    def get_lesson_time_interval(cursor_datetime: datetime.date):
         day_law_list = [
+            [
+                TimeInterval('18:00', 120),
+                TimeInterval('20:00', 120),
+                TimeInterval('22:00', 120),
+            ],
             None,
             None,
             [
@@ -97,35 +122,33 @@ def get_lesson_time_interval(examination_date: datetime.date, excluded_dates: ty
                 TimeInterval('14:00', 120),
                 TimeInterval('16:00', 120),
             ],
-            [
-                TimeInterval('18:00', 120),
-                TimeInterval('20:00', 120),
-                TimeInterval('22:00', 120),
-            ]
         ]
 
         while True:
-            for day in reversed(day_law_list):
-                if day is None:
-                    cursor_datetime = cursor_datetime - datetime.timedelta(days=1)
-                    continue
+            index = (cursor_datetime.day-1) % len(day_law_list)
+            day = day_law_list[index]
 
-                for interval in reversed(day):
-                    lesson_start_datetime = cursor_datetime.replace(hour=interval.start.hour,minute=interval.start.minute,)
-                    lesson_end_datetime = lesson_start_datetime + datetime.timedelta(minutes=interval.duration)
+            if day is None:
+                cursor_datetime = cursor_datetime + datetime.timedelta(days=1)
+                continue
 
-                    yield DateTimeInterval(lesson_start_datetime, lesson_end_datetime)
+            for interval in day:
+                lesson_start_datetime = cursor_datetime.replace(hour=interval.start.hour,minute=interval.start.minute,)
+                lesson_end_datetime = lesson_start_datetime + datetime.timedelta(minutes=interval.duration)
 
-                cursor_datetime = cursor_datetime - datetime.timedelta(days=1)
+                yield DateTimeInterval(lesson_start_datetime, lesson_end_datetime)
+
+            cursor_datetime = cursor_datetime + datetime.timedelta(days=1)
 
     cursor_datetime = datetime.datetime.combine(examination_date, datetime.time.min)
-    cursor_datetime = cursor_datetime - datetime.timedelta(days=1)
+    cursor_datetime = cursor_datetime + datetime.timedelta(days=7)
 
     lesson_time_interval_generator = get_lesson_time_interval(cursor_datetime)
 
     while True:
         for lesson_time_interval in lesson_time_interval_generator:
             yield lesson_time_interval
+
 
 def may_drive(student: Student, lesson_datetime_interval: DateTimeInterval) -> bool:
     if student.hours <= 0:
@@ -135,6 +158,10 @@ def may_drive(student: Student, lesson_datetime_interval: DateTimeInterval) -> b
 
     if group is None:
         return True
+
+    if (group.start_date + datetime.timedelta(days=7)) > lesson_datetime_interval.start:
+        # print(f'Group is not ready to drive')
+        return False
 
     for group_time_law in group.time_law_list:
         if group_time_law.weekday != lesson_datetime_interval.start.weekday():
@@ -147,47 +174,86 @@ def may_drive(student: Student, lesson_datetime_interval: DateTimeInterval) -> b
             minute=group_time_law.interval.start.minute,
         )
 
-        group_time_interval = (group_time_interval_start, group_time_interval_start + datetime.timedelta(minutes=group_time_law.interval.duration))  # time
+        group_time_interval = (
+            group_time_interval_start,
+            group_time_interval_start + datetime.timedelta(minutes=int(group_time_law.interval.duration))
+        )  # time
 
-        return not time_interval_intersects(lesson_time_interval, group_time_interval)
+        if time_interval_intersects(lesson_time_interval, group_time_interval):
+            return False
+            print(f'{student} can not drive on', lesson_time_interval, 'due to theory lesson')
+        else:
+            return True
 
 
-def distribute(examination_date: datetime.date, group_list: typing.List[Group]):
-    def cycle(x):
+def distribute_by_teachers(examination_date: datetime.date, teacher_list: typing.List[Teacher]):
+    for teacher in reversed(teacher_list):
+        distribute(examination_date=examination_date, student_list=teacher.students_)
+        print()
+
+
+def distribute(examination_date: datetime.date, student_list: typing.List[Student]):
+    def cycle_over_group(group: typing.List[Student]):
+        expired = False
         while True:
-            for i in x:
-                yield i
+            for student_ in group:
+                expired = False
+                if student_.hours <= 0:
+                    expired = True
+                    continue
+                yield student_
+            else:
+                if expired:
+                    break
+
+    if len(student_list) == 0:
+        return None
 
     # # 1. prepare student list
-    student_list: typing.List[Student] = []
-
-    for group in reversed(group_list):
-        student_list.extend(reversed(group))
-
-    students_cycle = cycle(student_list)  # fixme
+    students_cycle = cycle_over_group(student_list)
 
     # # 2. iterate over lesson time law
     for lesson_time_interval in get_lesson_time_interval(examination_date, []):
-        bound = False
+        checks = []
 
         for student in students_cycle:
-            if may_drive(student, lesson_time_interval):
-                student.hours -= 2  # fixme hardcode
-                bound = True
-                print( lesson_time_interval, student)  # fixme replace print to yield
+            check = (student, lesson_time_interval)
+
+            if check in checks:
                 break
+
+            if may_drive(student, lesson_time_interval):
+
+                student.hours -= 2  # fixme hardcode
+                # fixme replace print to yield
+                print(lesson_time_interval, ':', student, f'with teacher {student.teacher_!r}')
+                break
+
+            checks.append(check)
         else:
             break
 
-        if bound:
-            continue
-        else:
-            raise Exception('should never happen')
+
+def assign_students_on_teachers(group_list: typing.List[Group], teacher_list: typing.List[Teacher]):
+    teachers = cycle(list(teacher_list))  # fixme
+    # groups = reversed(group_list)  # fixme
+    groups = group_list  # fixme: temporary
+
+    print('- Assigning students on teachers')
+
+    for group in groups:
+        for student in group:
+            teacher = next(teachers)
+
+            print(f'  - assign {student!r} on {teacher!r}')
+
+            student.assign_teacher(teacher=teacher)
+        print()
 
 
 if __name__ == '__main__':
-    def create_group(name: str, size: int) -> Group:
-        group = Group()
+    def create_group(name: str, size: int, start_date: str) -> Group:
+        group = Group(start_date=datetime.datetime.fromisoformat(start_date))
 
         for number in range(1, size + 1):
             student = Student(name + '_' + str(number))
@@ -199,13 +265,14 @@ if __name__ == '__main__':
 
     # payload
 
-    teacher_1 = Teacher(1)
-    teacher_2 = Teacher(2)
-    teacher_3 = Teacher(3)
-    teacher_4 = Teacher(4)
-    teacher_5 = Teacher(5)
-    teacher_6 = Teacher(6)
-    teacher_7 = Teacher(7)
+    # teachers:
+    teacher_1 = Teacher('1')
+    teacher_2 = Teacher('2')
+    teacher_3 = Teacher('3')
+    teacher_4 = Teacher('4')
+    teacher_5 = Teacher('5')
+    teacher_6 = Teacher('6')
+    teacher_7 = Teacher('7')
 
     teacher_list = [
         teacher_1,
@@ -217,28 +284,66 @@ if __name__ == '__main__':
         teacher_7
     ]
 
-    group_1 = create_group('A', 5)
-    group_2 = create_group('B', 5)
+    # groups
+    # group_1 = create_group('13B', 2, '2019-06-25')
+    # group_2 = create_group('14B', 2, '2019-07-25')
 
-    # group_1 = create_group('A', 11)
-    # group_2 = create_group('B', 16)
+    group_1 = create_group('13B', 17, '2019-06-25')
+    group_2 = create_group('14B', 16, '2019-07-25')
+    group_3 = create_group('15B', 14, '2019-09-04')
+    group_4 = create_group('16B', 18, '2019-10-12')
+    group_5 = create_group('17B', 12, '2019-11-09')
+
+    group_list = [
+        group_1,
+        group_2,
+        group_3,
+        group_4,
+        group_5,
+    ]
 
     group_1.add_time_law([
-        TimeLaw(Week.понедельник, TimeInterval('18:00', 120)),
-        TimeLaw(Week.среда,TimeInterval('18:00', 120)),
+        TimeLaw(Week.вторник, TimeInterval('08:00', 195)),  # 8.00-11.15 : 3h15m = 3 * 60 + 15
+        TimeLaw(Week.четверг, TimeInterval('08:00', 195)),
+        TimeLaw(Week.суббота, TimeInterval('08:00', 195)),
     ])
 
     group_2.add_time_law([
-        TimeLaw(Week.вторник, TimeInterval('19:30', 120)),
-        TimeLaw(Week.четверг, TimeInterval('19:30', 120)),
+        TimeLaw(Week.вторник, TimeInterval('11:30', 195)),  # 11.30-14.45 : 3h15m = 3 * 60 + 15
+        TimeLaw(Week.четверг, TimeInterval('11:30', 195)),
+        TimeLaw(Week.суббота, TimeInterval('11:30', 195)),
     ])
 
-    examination_date = datetime.date.fromisoformat('2019-09-21')
+    group_3.add_time_law([
+        TimeLaw(Week.понедельник, TimeInterval('15:00', 195)),  # 15.00-18.15 : 3h15m = 3 * 60 + 15
+        TimeLaw(Week.среда, TimeInterval('15:00', 195)),
+        TimeLaw(Week.пятница, TimeInterval('15:00', 195)),
+    ])
 
-    distribute(
-        examination_date=examination_date,
-        group_list=[
-            group_1,
-            group_2
-        ]
+    group_4.add_time_law([
+        TimeLaw(Week.понедельник, TimeInterval('18:30', 195)),  # 18.30-21.45 : 3h15m = 3 * 60 + 15
+        TimeLaw(Week.среда, TimeInterval('18:30', 195)),
+        TimeLaw(Week.пятница, TimeInterval('18:30', 195)),
+    ])
+
+    group_5.add_time_law([
+        TimeLaw(Week.вторник, TimeInterval('19:30', 195)),  # 15.00-18.15 : 3h15m = 3 * 60 + 15
+        TimeLaw(Week.четверг, TimeInterval('19:30', 195)),
+        TimeLaw(Week.суббота, TimeInterval('19:30', 195)),
+        TimeLaw(Week.воскресение, TimeInterval('19:30', 195)),
+    ])
+
+    # main
+    examination_date = datetime.date.fromisoformat('2019-06-26')
+
+    assign_students_on_teachers(
+        group_list=group_list,
+        teacher_list=teacher_list,
     )
+
+    distribute_by_teachers(
+        examination_date=examination_date,
+        teacher_list=teacher_list,
+    )
+
+    print('\n', group_list)
