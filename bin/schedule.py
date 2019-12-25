@@ -4,7 +4,10 @@ import typing
 
 # DATE
 
-def time_interval_intersects(time_interval_a: datetime.time, time_interval_b: datetime.time):
+def time_interval_intersects(
+        time_interval_a: typing.Tuple[datetime.datetime, datetime.datetime],
+        time_interval_b: typing.Tuple[datetime.datetime, datetime.datetime]
+):
     time_start_a, time_end_a = time_interval_a
     time_start_b, time_end_b = time_interval_b
 
