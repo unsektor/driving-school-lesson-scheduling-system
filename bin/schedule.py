@@ -17,7 +17,8 @@ class DateTimeInterval:
         self.end = end
 
     def __repr__(self):
-        return self.start.strftime('%Y-%m-%d (%H:%M-') + self.end.strftime('%H:%M)')
+        return '["' + self.start.strftime('%Y-%m-%d %H:%M') + '", "' + self.end.strftime('%Y-%m-%d %H:%M') + '"]'  # fixme
+        # return self.start.strftime('%Y-%m-%d (%H:%M-') + self.end.strftime('%H:%M)')
 
 
 class TimeInterval:
@@ -97,13 +98,28 @@ class Group(list):
         self.time_law_list.extend(time_law_list)
 
 
+class Lesson:
+    def __init__(
+            self,
+            student: Student,
+            teacher: Teacher,
+            interval: DateTimeInterval
+    ):
+        self.student: Student = student
+        self.teacher: Teacher = teacher
+        self.interval: DateTimeInterval = interval
+
+    def __repr__(self):
+        return f'Lesson(student={self.student!r}, teacher={self.teacher!r}, interval={self.interval!r})'
+
+
 # 1. все интервалы времени - справедливые к закономерности относительно
 # 2. (1.) + исключённые из-за праздничных дней
 # 3. (2.) + исключённые из-за расписания занятий группы
 
 
-def get_lesson_time_interval(examination_date: datetime.date, excluded_dates: typing.List[datetime.date]):
-    def get_lesson_time_interval(cursor_datetime: datetime.date):
+def get_lesson_time_interval(examination_date: datetime.date, excluded_dates: typing.List[datetime.date]) -> typing.Iterator[DateTimeInterval]:
+    def get_lesson_time_interval(cursor_datetime: datetime.date) -> typing.Iterator[DateTimeInterval]:
         day_law_list = [
             [
                 TimeInterval('18:00', 120),
@@ -181,18 +197,20 @@ def may_drive(student: Student, lesson_datetime_interval: DateTimeInterval) -> b
 
         if time_interval_intersects(lesson_time_interval, group_time_interval):
             return False
-            print(f'{student} can not drive on', lesson_time_interval, 'due to theory lesson')
+            # print(f'{student} can not drive on', lesson_time_interval, 'due to theory lesson')
         else:
             return True
 
 
-def distribute_by_teachers(examination_date: datetime.date, teacher_list: typing.List[Teacher]):
-    for teacher in reversed(teacher_list):
-        distribute(examination_date=examination_date, student_list=teacher.students_)
-        print()
+def distribute_by_teachers(start_date: datetime.date, teacher_list: typing.List[Teacher]):
+    for teacher in teacher_list:
+        yield from distribute(
+            start_date=start_date,
+            student_list=teacher.students_,
+        )
 
 
-def distribute(examination_date: datetime.date, student_list: typing.List[Student]):
+def distribute(start_date: datetime.date, student_list: typing.List[Student]):
     def cycle_over_group(group: typing.List[Student]):
         expired = False
         while True:
@@ -213,7 +231,7 @@ def distribute(examination_date: datetime.date, student_list: typing.List[Studen
     students_cycle = cycle_over_group(student_list)
 
     # # 2. iterate over lesson time law
-    for lesson_time_interval in get_lesson_time_interval(examination_date, []):
+    for lesson_time_interval in get_lesson_time_interval(start_date, []):
         checks = []
 
         for student in students_cycle:
@@ -223,10 +241,14 @@ def distribute(examination_date: datetime.date, student_list: typing.List[Studen
                 break
 
             if may_drive(student, lesson_time_interval):
-
                 student.hours -= 2  # fixme hardcode
-                # fixme replace print to yield
-                print(lesson_time_interval, ':', student, f'with teacher {student.teacher_!r}')
+
+                yield Lesson(
+                    student=student,
+                    teacher=student.teacher_,
+                    interval=lesson_time_interval,
+                )
+
                 break
 
             checks.append(check)
@@ -249,6 +271,25 @@ def assign_students_on_teachers(group_list: typing.List[Group], teacher_list: ty
 
             student.assign_teacher(teacher=teacher)
         print()
+
+
+import json
+
+class ViewBuilder:
+    def build(self, lesson_iterator: typing.Iterator[Lesson]):
+        lesson_list = []
+
+        for lesson in lesson_generator:
+            lesson_list.append({
+                'teacher': lesson.teacher.name,
+                'student': lesson.student.name,
+                'interval': [
+                    lesson.interval.start.strftime('%Y-%m-%d %H:%M:00'),
+                    lesson.interval.end.strftime('%Y-%m-%d %H:%M:00')
+                ]
+            })
+
+        return lesson_list
 
 
 if __name__ == '__main__':
@@ -334,16 +375,42 @@ if __name__ == '__main__':
     ])
 
     # main
-    examination_date = datetime.date.fromisoformat('2019-06-26')
+    start_date = datetime.date.fromisoformat('2019-06-26')
 
     assign_students_on_teachers(
         group_list=group_list,
         teacher_list=teacher_list,
     )
 
-    distribute_by_teachers(
-        examination_date=examination_date,
+    lesson_generator = distribute_by_teachers(
+        start_date=start_date,
         teacher_list=teacher_list,
     )
 
-    print('\n', group_list)
+    view_builder = ViewBuilder()
+    data = view_builder.build(lesson_generator)
+
+    response = {
+        "meta": {
+            "day_schedule": [
+                "06.00-08.00",
+                "08.00-10.00",
+                "10.00-12.00",
+                "12.00-14.00",
+                "14.00-16.00",
+                "16.00-18.00",
+                "18.00-20.00",
+                "20.00-22.00",
+                "22.00-00.00",
+            ]
+        },
+        "data": data,
+    }
+
+    raw_response = json.dumps(response)
+    print(raw_response)
+
+    # for lesson in lesson_generator:
+    #     print(lesson)
+
+    # print(group_list)
