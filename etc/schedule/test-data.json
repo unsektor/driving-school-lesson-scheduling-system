@@ -1,0 +1,186 @@
+{
+  "weekend": [
+    "2019-01-01",
+    "2019-01-02",
+    "2019-01-03",
+    "2019-01-04",
+    "2019-01-05",
+    "2019-01-06",
+    "2019-01-07",
+    "2019-01-08"
+  ],
+  "teacher": {
+    "count": 7
+  },
+  "groups": [
+    {
+      "name": "13B",
+      "date_start": "2019-06-25",
+      "students": {
+        "manual": 14,
+        "auto": 3
+      },
+      "schedule": [
+        {
+          "weekday": 1,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 3,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 5,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        }
+      ]
+    },
+    {
+      "name": "14B",
+      "date_start": "2019-07-25",
+      "students": {
+        "manual": 12,
+        "auto": 4
+      },
+      "schedule": [
+        {
+          "weekday": 1,
+          "interval": {
+            "start_time": "11:30",
+            "end_time": "14:45"
+          }
+        },
+        {
+          "weekday": 3,
+          "interval": {
+            "start_time": "11:30",
+            "end_time": "14:45"
+          }
+        },
+        {
+          "weekday": 5,
+          "interval": {
+            "start_time": "11:30",
+            "end_time": "14:45"
+          }
+        }
+      ]
+    },
+    {
+      "name": "15B",
+      "date_start": "2019-09-04",
+      "students": {
+        "manual": 11,
+        "auto": 3
+      },
+      "schedule": [
+        {
+          "weekday": 0,
+          "interval": {
+            "start_time": "15:00",
+            "end_time": "18:15"
+          }
+        },
+        {
+          "weekday": 2,
+          "interval": {
+            "start_time": "15:00",
+            "end_time": "18:15"
+          }
+        },
+        {
+          "weekday": 4,
+          "interval": {
+            "start_time": "15:00",
+            "end_time": "18:15"
+          }
+        }
+      ]
+    },
+    {
+      "name": "16B",
+      "date_start": "2019-10-12",
+      "students": {
+        "manual": 12,
+        "auto": 6
+      },
+      "schedule": [
+        {
+          "weekday": 0,
+          "interval": {
+            "start_time": "18:30",
+            "end_time": "21:45"
+          }
+        },
+        {
+          "weekday": 2,
+          "interval": {
+            "start_time": "18:30",
+            "end_time": "21:45"
+          }
+        },
+        {
+          "weekday": 4,
+          "interval": {
+            "start_time": "18:30",
+            "end_time": "21:45"
+          }
+        },
+        {
+          "weekday": 5,
+          "interval": {
+            "start_time": "18:30",
+            "end_time": "21:45"
+          }
+        }
+      ]
+    },
+    {
+      "name": "17B",
+      "date_start": "2019-11-09",
+      "students": {
+        "manual": 10,
+        "auto": 2
+      },
+      "schedule": [
+        {
+          "weekday": 1,
+          "interval": {
+            "start_time": "15:00",
+            "end_time": "18:15"
+          }
+        },
+        {
+          "weekday": 3,
+          "interval": {
+            "start_time": "15:00",
+            "end_time": "18:15"
+          }
+        },
+        {
+          "weekday": 5,
+          "interval": {
+            "start_time": "15:00",
+            "end_time": "18:15"
+          }
+        },
+        {
+          "weekday": 6,
+          "interval": {
+            "start_time": "15:00",
+            "end_time": "18:15"
+          }
+        }
+      ]
+    }
+  ]
+}

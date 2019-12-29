@@ -5,14 +5,16 @@ function transform_data(data) {
             transformed_data[lesson['teacher']] = {/* month */};
         }
 
-        let lesson_date_start = new Date(lesson.interval[0]);
-        let lesson_date_end = new Date(lesson.interval[1]);
+        // console.log(data)
+
+        let lesson_date_start = new Date(lesson.interval[0].replace(' ', 'T'));
+        let lesson_date_end = new Date(lesson.interval[1].replace(' ', 'T'));
+
 
         let scalar_lesson_date_start =
             lesson_date_start.getFullYear() + '-' +
             (lesson_date_start.getMonth() + 1 + '').padStart(2, '0') + '-' +
-            (lesson_date_start.getDate() + '').padStart(2, '0')
-        ;
+            (lesson_date_start.getDate() + '').padStart(2, '0');
 
         let interval =
             (lesson_date_start.getHours() + '').padStart(2, '0') + ':' +
@@ -24,7 +26,7 @@ function transform_data(data) {
             transformed_data[lesson['teacher']][scalar_lesson_date_start] = {};
         }
 
-        transformed_data[lesson['teacher']][scalar_lesson_date_start][interval] = lesson.student;
+        transformed_data[lesson['teacher']][scalar_lesson_date_start][interval] = {student: lesson.student, type: lesson.type};
     }
 
     return transformed_data
@@ -56,16 +58,18 @@ function render_month(year, month, interval_list, data) {
             let index = year + '-' + month.toString().padStart(2, '0') + '-' + i.toString().padStart(2, '0');
 
             let value = '';
+            let style = '';
 
             // console.log(data);
             if (index in data) {
                 // value = interval
                 if (interval in data[index]) {
-                    value = data[index][interval];
+                    value = data[index][interval].student;
+                    style = (data[index][interval].type === 0) ? 'style="background: #ddd"' : '';
                 }
             }
 
-            html += '<td>' + value + '</td>'
+            html += `<td ${style}>${value}</td>`
         }
         html += '</tr>';
     }
@@ -92,7 +96,7 @@ function render_teacher(teacher, teacher_data, metadata) {
     return html;
 }
 
-let Application = function () {
+var Application = function () {
     this.main = function (data) {
         const transformed_data = transform_data(data['data']);
         console.log(transformed_data);  // debug
@@ -108,40 +112,5 @@ let Application = function () {
 };
 
 window.addEventListener('DOMContentLoaded', function (e) {
-    const data = {
-        "meta": {
-            "day_schedule": [
-                "06:00-08:00",
-                "08:00-10:00",
-                "10:00-12:00",
-                "12:00-14:00",
-                "14:00-16:00",
-                "16:00-18:00",
-                "18:00-20:00",
-                "20:00-22:00",
-                "22:00-00:00"
-            ]
-        },
-        "data": [
-            {
-                "teacher": "1",
-                "student": "13B_1",
-                "interval": [
-                    "2019-07-04 06:00:00",
-                    "2019-07-04 08:00:00"
-                ]
-            },
-            {
-                "teacher": "1",
-                "student": "13B_8",
-                "interval": [
-                    "2019-07-04 08:00:00",
-                    "2019-07-04 10:00:00"
-                ]
-            }
-        ]
-    };
-
-    let application = new Application();
-    application.main(data);
+    window.application = new Application();
 });

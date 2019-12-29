@@ -22,9 +22,17 @@
                 padding: 5px;
             }
 
+            textarea {
+                width: 100%;
+                min-height: 10em;
+            }
+
         </style>
 
+        <textarea onchange="window.application.main(JSON.parse(this.value))"></textarea>
+
         <div id="application"></div>
-        <script src="./assets/scripts/default/default.js"></script>
+
+        <script src="./assets/default/default.js"></script>
     </body>
 </html>

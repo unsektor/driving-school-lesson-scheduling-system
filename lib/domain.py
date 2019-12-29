@@ -15,7 +15,7 @@ class Student:
         self.hours = 58  # / 2 = 29
         self.program = program
 
-        self.group_ = None
+        self.group_: typing.Union[Group, None] = None
         self.teacher_ = None
         self.lessons_ = []  # planned drive lessons
 
@@ -32,16 +32,16 @@ class Group(list):
         super().__init__()
 
         self.start_date = start_date
-        self.time_law_list: typing.List[date.TimeLaw] = []
+        self.schedule_list: typing.List[date.Schedule] = []
 
-    def add_time_law(self, time_law_list: typing.List[date.TimeLaw]):
-        self.time_law_list.extend(time_law_list)
+    def add_schedule(self, schedule: date.Schedule):
+        self.schedule_list.append(schedule)
 
 
 class Teacher:
     def __init__(self, name: str):
         self.name = name
-        self.students_ = []
+        self.students_: typing.List[Student] = []
 
     def __repr__(self):
         return f'Teacher({self.name!s})'

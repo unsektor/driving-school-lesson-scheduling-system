@@ -18,27 +18,16 @@ class DateTimeInterval:
         self.end = end
 
     def __repr__(self):
-        return '["' + self.start.strftime('%Y-%m-%d %H:%M') + '", "' + self.end.strftime('%Y-%m-%d %H:%M') + '"]'  # fixme
-        # return self.start.strftime('%Y-%m-%d (%H:%M-') + self.end.strftime('%H:%M)')
+        return self.start.strftime('%Y-%m-%d (%H:%M-') + self.end.strftime('%H:%M)')
 
 
 class TimeInterval:
-    def __init__(self, start: str, duration: int):
-        self.start = datetime.time.fromisoformat(start)
-        self.duration = duration
+    def __init__(self, start: str, end: str):
+        self.start_time = datetime.time.fromisoformat(start)
+        self.end_time = datetime.time.fromisoformat(end)
 
 
-class Week:
-    понедельник = 0
-    вторник = 1
-    среда = 2
-    четверг = 3
-    пятница = 4
-    суббота = 5
-    воскресение = 6
-
-
-class TimeLaw:
+class Schedule:
     def __init__(self, day: int, interval: TimeInterval):
-        self.weekday = day
+        self.weekday: int = day
         self.interval: TimeInterval = interval

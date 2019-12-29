@@ -15,18 +15,35 @@ import typing
 from functools import lru_cache
 import json
 
-from date import TimeInterval, TimeLaw, DateTimeInterval
+import config
+import config.dto
+import config.adapter
+
+from date import TimeInterval, Schedule, DateTimeInterval
 import date
 import view
 from domain import Program, LessonType, Lesson, Student, Teacher, Group
 
 
 # System
+def cache_on(value):
+    def decorator(func):
+        cache_map = {}
 
-def cycle(iterable: typing.Iterator):
-    while True:
-        for item in iterable:
-            yield item
+        def wrapper(*args, **kwargs):
+            arguments_hash = (args, kwargs)
+
+            if arguments_hash in cache_map:
+                return cache_map[arguments_hash]
+
+            result = func(*args, **kwargs)
+
+            if result == value:
+                cache_map[arguments_hash] = result
+
+        return wrapper
+    return decorator
+
 
 # Domain
 
@@ -67,7 +84,7 @@ program_lesson_count_map = {
     Program.AUTO: 11,
 }
 
-
+# @cache_on(value=True)
 def has_finished_lessons_type(student: Student, lesson_type: int):
     if lesson_type != LessonType.RING:
         return not (has_finished_lessons_type(student=student, lesson_type=LessonType.RING) and student.hours > 0)
@@ -80,44 +97,6 @@ def has_finished_lessons_type(student: Student, lesson_type: int):
             finished_lessons_count += 1
 
     return finished_lessons_count >= required_lessons
-
-
-# 1. все интервалы времени - справедливые к закономерности относительно
-# 2. (1.) + исключённые из-за праздничных дней
-# 3. (2.) + исключённые из-за расписания занятий группы
-
-
-def get_lesson_time_interval(examination_date: datetime.date, excluded_dates: typing.List[datetime.date]) -> typing.Iterator[DateTimeInterval]:
-    def get_lesson_time_interval(cursor_datetime: datetime.date) -> typing.Iterator[DateTimeInterval]:
-        while True:
-            index = (cursor_datetime.day-1) % len(AGREEMENT_RING_LESSON_LAW_TIME_INTERVAL_LIST)
-            day = AGREEMENT_RING_LESSON_LAW_TIME_INTERVAL_LIST[index]
-
-            is_weekend = cursor_datetime.day % 7 == 0
-            if is_weekend or (day is None):
-                if is_weekend:
-                    # print('day is weekend')
-                    pass
-                cursor_datetime = cursor_datetime + datetime.timedelta(days=1)
-                continue
-
-            for interval in day:
-                lesson_start_datetime = cursor_datetime.replace(hour=interval.start.hour, minute=interval.start.minute,)
-                lesson_end_datetime = lesson_start_datetime + datetime.timedelta(minutes=interval.duration)
-
-                yield DateTimeInterval(lesson_start_datetime, lesson_end_datetime)
-
-            cursor_datetime = cursor_datetime + datetime.timedelta(days=1)
-
-    cursor_datetime = datetime.datetime.combine(examination_date, datetime.time.min)
-    cursor_datetime = cursor_datetime + datetime.timedelta(days=7)
-
-    lesson_time_interval_generator = get_lesson_time_interval(cursor_datetime)
-
-    while True:
-        for lesson_time_interval in lesson_time_interval_generator:
-            yield lesson_time_interval
-
 
 @lru_cache()
 def get_lesson_type(interval: DateTimeInterval) -> int:
@@ -133,7 +112,7 @@ def get_lesson_type(interval: DateTimeInterval) -> int:
 
     return LessonType.CITY
 
-
+# @cache_on(value=False)
 def may_drive(student: Student, lesson_datetime_interval: DateTimeInterval) -> bool:
     if student.hours <= 0:
         return False
@@ -156,21 +135,26 @@ def may_drive(student: Student, lesson_datetime_interval: DateTimeInterval) -> b
             return False
 
     # Отсутствует пересечение с теоритическими занятиями
-    for group_time_law in student.group_.time_law_list:
-        if group_time_law.weekday != lesson_datetime_interval.start.weekday():
+    for group_schedule in student.group_.schedule_list:
+        if group_schedule.weekday != lesson_datetime_interval.start.weekday():
             return True
 
         lesson_time_interval = (lesson_datetime_interval.start, lesson_datetime_interval.end)
 
         group_time_interval_start = lesson_datetime_interval.start.replace(
-            hour=group_time_law.interval.start.hour,
-            minute=group_time_law.interval.start.minute,
+            hour=group_schedule.interval.start_time.hour,
+            minute=group_schedule.interval.start_time.minute,
+        )
+
+        group_time_interval_end = lesson_datetime_interval.start.replace(
+            hour=group_schedule.interval.end_time.hour,
+            minute=group_schedule.interval.end_time.minute,
         )
 
         group_time_interval = (
             group_time_interval_start,
-            group_time_interval_start + datetime.timedelta(minutes=int(group_time_law.interval.duration))
-        )  # time
+            group_time_interval_end
+        )
 
         if date.time_interval_intersects(lesson_time_interval, group_time_interval):
             return False
@@ -179,11 +163,17 @@ def may_drive(student: Student, lesson_datetime_interval: DateTimeInterval) -> b
             return True
 
 
-def is_weekend(teacher: Teacher, date: datetime.date) -> bool:
-    return date.day in [3, 8, 13, 18, 23, 28]  # FIXME HARDCODE !
+def is_weekend(teacher: Teacher, date: datetime.date, weekend_list: typing.List[datetime.date]) -> bool:
+    if date.day in [3, 8, 13, 18, 23, 28]:  # FIXME HARDCODE !
+        return True
+
+    if date in weekend_list:
+        return True
+
+    return False
 
 
-def schedule_by_teacher(teacher: Teacher):
+def schedule_by_teacher(teacher: Teacher, weekend_list: typing.List[datetime.date]):
     def get_first_study_month(student_list: typing.List[Student]) -> datetime.date:
         group_start_date_set = set()
         for student in student_list:
@@ -232,7 +222,7 @@ def schedule_by_teacher(teacher: Teacher):
 
     # пока у преподавателя не все студенты завершили все часы вождения
     while not all_finished(student_list=teacher.students_):
-        if is_weekend(teacher=teacher, date=cursor_date):  # у преподавателя выходной ?
+        if is_weekend(teacher=teacher, date=cursor_date, weekend_list=weekend_list):  # у преподавателя выходной ?
             cursor_date += datetime.timedelta(days=1)
             continue
 
@@ -269,7 +259,12 @@ def schedule_by_teacher(teacher: Teacher):
 
 
 def assign_students_on_teachers(group_list: typing.List[Group], teacher_list: typing.List[Teacher]):
-    teachers = cycle(list(teacher_list))  # fixme
+    def teacher_cycle(iterable: typing.Iterator):
+        while True:
+            for item in iterable:
+                yield item
+
+    teachers = teacher_cycle(teacher_list)
     print('- Assigning students on teachers')
 
     for group in group_list:
@@ -282,102 +277,42 @@ def assign_students_on_teachers(group_list: typing.List[Group], teacher_list: ty
         print()
 
 
-def create_group(name: str, manual_size: int, auto_size: int, start_date: str) -> Group:
-    group = Group(start_date=datetime.datetime.fromisoformat(start_date))
+def create_group(group_config: config.dto.Group) -> Group:
+    group = Group(start_date=datetime.datetime.fromisoformat(group_config.date_start))
 
-    for number in range(1, manual_size + 1):
-        student = Student(name + '_M_' + str(number), program=Program.MANUAL)
+    # add schedule
+    for schedule in group_config.schedule_list:
+        group.add_schedule(Schedule(
+            day=schedule.weekday,
+            interval=TimeInterval(start=schedule.start, end=schedule.end)
+        ))
+
+    # populate with students
+    for number in range(0, group_config.students.manual):
+        student = Student(group_config.name + '_M_' + str(number + 1), program=Program.MANUAL)
         student.group_ = group
         group.append(student)
 
-    for number in range(1, auto_size + 1):
-        student = Student(name + '_A_' + str(number), program=Program.AUTO)
+    for number in range(0, group_config.students.auto):
+        student = Student(group_config.name + '_A_' + str(number + 1), program=Program.AUTO)
         student.group_ = group
         group.append(student)
 
     return group
 
 
-if __name__ == '__main__':
-    # teachers:
-    teacher_list = [Teacher(str(i)) for i in range(1, 8)]
+def main():
+    with open('../etc/schedule/test-data.json') as f:
+        data = json.load(f)
 
-    # groups
-    group_1 = create_group('13B', 14, 3, '2019-06-25')  # 3 автомат: 17-3 = 14
-    group_2 = create_group('14B', 12, 4, '2019-07-25')  # 4 автомат: 16-4 = 12
-    group_3 = create_group('15B', 11, 3, '2019-09-04')  # 3 автомат: 14-3 = 11
-    group_4 = create_group('16B', 12, 6, '2019-10-12')  # 6 автомат: 18-6 = 12
-    group_5 = create_group('17B', 10, 2, '2019-11-09')  # 2 автомат: 12-2 = 10
-
-    group_list = [
-        group_1,
-        group_2,
-        group_3,
-        group_4,
-        group_5,
-    ]
-
-    group_1.add_time_law([
-        # 8.00-11.15 : 3h15m = 3 * 60 + 15
-        TimeLaw(date.Week.вторник, TimeInterval('08:00', 195)),
-        TimeLaw(date.Week.четверг, TimeInterval('08:00', 195)),
-        TimeLaw(date.Week.суббота, TimeInterval('08:00', 195)),
-    ])
-
-    group_2.add_time_law([
-        # 11.30-14.45 : 3h15m = 3 * 60 + 15
-        TimeLaw(date.Week.вторник, TimeInterval('11:30', 195)),
-        TimeLaw(date.Week.четверг, TimeInterval('11:30', 195)),
-        TimeLaw(date.Week.суббота, TimeInterval('11:30', 195)),
-    ])
-
-    group_3.add_time_law([
-        # 15.00-18.15 : 3h15m = 3 * 60 + 15
-        TimeLaw(date.Week.понедельник, TimeInterval('15:00', 195)),
-        TimeLaw(date.Week.среда, TimeInterval('15:00', 195)),
-        TimeLaw(date.Week.пятница, TimeInterval('15:00', 195)),
-    ])
-
-    group_4.add_time_law([
-        # 18.30-21.45 : 3h15m = 3 * 60 + 15
-        TimeLaw(date.Week.понедельник, TimeInterval('18:30', 195)),
-        TimeLaw(date.Week.среда, TimeInterval('18:30', 195)),
-        TimeLaw(date.Week.пятница, TimeInterval('18:30', 195)),
-    ])
-
-    group_5.add_time_law([
-        # 15.00-18.15 : 3h15m = 3 * 60 + 15
-        TimeLaw(date.Week.вторник, TimeInterval('19:30', 195)),
-        TimeLaw(date.Week.четверг, TimeInterval('19:30', 195)),
-        TimeLaw(date.Week.суббота, TimeInterval('19:30', 195)),
-        TimeLaw(date.Week.воскресение, TimeInterval('19:30', 195)),
-    ])
-
-    # group_1.add_time_law([
-    #     TimeLaw(date.Week.понедельник, TimeInterval('19:00', 120)),
-    #     TimeLaw(date.Week.среда, TimeInterval('19:00', 120)),
-    # ])
-    #
-    # group_2.add_time_law([
-    #     TimeLaw(date.Week.вторник, TimeInterval('18:30', 120)),
-    #     TimeLaw(date.Week.четверг, TimeInterval('18:30', 120)),
-    # ])
-    #
-    # group_3.add_time_law([
-    #     TimeLaw(date.Week.пятница, TimeInterval('19:00', 120)),
-    # ])
-    #
-    # group_4.add_time_law([
-    #     TimeLaw(date.Week.суббота, TimeInterval('10:00', 180)),
-    #     TimeLaw(date.Week.воскресение, TimeInterval('13:00', 120)),
-    # ])
-    #
-    # group_5.add_time_law([  # as same as 1
-    #     TimeLaw(date.Week.понедельник, TimeInterval('19:00', 120)),
-    #     TimeLaw(date.Week.среда, TimeInterval('19:00', 120)),
-    # ])
+    config_adapter = config.adapter.ConfigAdapter()
+    config_ = config_adapter.adapt(data=data)
 
     # main
+    weekend_list = [datetime.date.fromisoformat(weekend_date) for weekend_date in config_.weekend_list]
+    teacher_list = [Teacher(name=str(i + 1)) for i in range(0, config_.teacher.count)]
+    group_list = [create_group(group_config=group_config) for group_config in config_.group_list]
+
     assign_students_on_teachers(
         group_list=group_list,
         teacher_list=teacher_list,
@@ -385,10 +320,11 @@ if __name__ == '__main__':
 
     def lesson_generator_():
         for teacher in teacher_list:
-            yield from schedule_by_teacher(teacher=teacher)
+            yield from schedule_by_teacher(teacher=teacher, weekend_list=weekend_list)
 
     lesson_generator = lesson_generator_()
 
+    # view
     view_builder = view.ViewBuilder()
     data = view_builder.build(lesson_generator)
 
@@ -401,3 +337,7 @@ if __name__ == '__main__':
 
     raw_response = json.dumps(response)
     print(raw_response)
+
+
+if __name__ == '__main__':
+    main()
