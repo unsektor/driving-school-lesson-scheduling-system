@@ -2,6 +2,10 @@ import typing
 import domain
 
 
+class Lesson(dict):
+    pass
+
+
 class ViewBuilderInterface:
     def build(self, lesson_generator: typing.Iterator[domain.Lesson]):
         raise NotImplementedError
@@ -12,7 +16,7 @@ class ViewBuilder(ViewBuilderInterface):
         lesson_list = []
 
         for lesson in lesson_generator:
-            lesson_list.append({
+            lesson_list.append(Lesson({
                 'teacher': lesson.teacher.name,
                 'student': lesson.student.name,
                 'interval': [
@@ -20,6 +24,6 @@ class ViewBuilder(ViewBuilderInterface):
                     lesson.interval.end.strftime('%Y-%m-%d %H:%M:00')
                 ],
                 'type': lesson.type,
-            })
+            }))
 
         return lesson_list

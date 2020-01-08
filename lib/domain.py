@@ -28,9 +28,10 @@ class Student:
 
 
 class Group(list):
-    def __init__(self, start_date: datetime.datetime):
+    def __init__(self, name: str, start_date: datetime.datetime):
         super().__init__()
 
+        self.name = name
         self.start_date = start_date
         self.schedule_list: typing.List[date.Schedule] = []
 
