@@ -6,6 +6,7 @@
 - автоматчики = 11 занятий площадки, механики = 12 занятий площадки
 - в город только после площадки
 - у ученика максимум одно занятие в день
+- у преподавателя максимум 3 занятия в день
 """
 
 # 150 * 75
@@ -84,10 +85,11 @@ program_lesson_count_map = {
     Program.AUTO: 11,
 }
 
+
 # @cache_on(value=True)
-def has_finished_lessons_type(student: Student, lesson_type: int):
+def has_finished_lessons_type(student: Student, lesson_type: int) -> bool:
     if lesson_type != LessonType.RING:
-        return not (has_finished_lessons_type(student=student, lesson_type=LessonType.RING) and student.hours > 0)
+        return not (student.hours > 0 and has_finished_lessons_type(student=student, lesson_type=LessonType.RING))
 
     required_lessons = program_lesson_count_map[student.program]
     finished_lessons_count = 0
@@ -97,6 +99,7 @@ def has_finished_lessons_type(student: Student, lesson_type: int):
             finished_lessons_count += 1
 
     return finished_lessons_count >= required_lessons
+
 
 @lru_cache()
 def get_lesson_type(interval: DateTimeInterval) -> int:
@@ -112,15 +115,19 @@ def get_lesson_type(interval: DateTimeInterval) -> int:
 
     return LessonType.CITY
 
+
 # @cache_on(value=False)
 def may_drive(student: Student, lesson_datetime_interval: DateTimeInterval) -> bool:
     if student.hours <= 0:
         return False
 
     # Нет уже заплпнированного занятия в этот день
-    scalar_lesson_date_start = lesson_datetime_interval.start.strftime('%Y%m%d')
+    # scalar_lesson_date_start = lesson_datetime_interval.start.strftime('%Y%m%d')
+
+    a = (lesson_datetime_interval.start.year, lesson_datetime_interval.start.month, lesson_datetime_interval.start.day)
     for lesson in student.lessons_:
-        if lesson.interval.start.strftime('%Y%m%d') == scalar_lesson_date_start:
+        b = (lesson.interval.start.year, lesson.interval.start.month, lesson.interval.start.day)
+        if a == b:
             return False
 
     # Прошло 7 дней с начала обучения группы
@@ -137,7 +144,7 @@ def may_drive(student: Student, lesson_datetime_interval: DateTimeInterval) -> b
     # Отсутствует пересечение с теоритическими занятиями
     for group_schedule in student.group_.schedule_list:
         if group_schedule.weekday != lesson_datetime_interval.start.weekday():
-            return True
+            continue
 
         lesson_time_interval = (lesson_datetime_interval.start, lesson_datetime_interval.end)
 
@@ -161,6 +168,8 @@ def may_drive(student: Student, lesson_datetime_interval: DateTimeInterval) -> b
             # print(f'{student} can not drive on', lesson_time_interval, 'due to theory lesson')
         else:
             return True
+    else:
+        return True
 
 
 def is_weekend(teacher: Teacher, date: datetime.date, weekend_list: typing.List[datetime.date]) -> bool:
@@ -173,7 +182,7 @@ def is_weekend(teacher: Teacher, date: datetime.date, weekend_list: typing.List[
     return False
 
 
-def schedule_by_teacher(teacher: Teacher, weekend_list: typing.List[datetime.date]):
+def schedule_by_teacher(teacher: Teacher, config_: config.dto.Config):
     def get_first_study_month(student_list: typing.List[Student]) -> datetime.date:
         group_start_date_set = set()
         for student in student_list:
@@ -222,11 +231,15 @@ def schedule_by_teacher(teacher: Teacher, weekend_list: typing.List[datetime.dat
 
     # пока у преподавателя не все студенты завершили все часы вождения
     while not all_finished(student_list=teacher.students_):
-        if is_weekend(teacher=teacher, date=cursor_date, weekend_list=weekend_list):  # у преподавателя выходной ?
+        day_lessons_count = 0
+        if is_weekend(teacher=teacher, date=cursor_date, weekend_list=config_.weekend.weekend_list):  # у преподавателя выходной ?
             cursor_date += datetime.timedelta(days=1)
             continue
 
         for lesson_datetime_interval in lesson_interval_generator(day_date=cursor_date):
+            if day_lessons_count >= config_.teacher.max_lessons_per_day:
+                break
+
             lesson_type = get_lesson_type(interval=lesson_datetime_interval)
             # print ('lesson type : ', lesson_type)
             if lesson_type == LessonType.RING:
@@ -243,11 +256,13 @@ def schedule_by_teacher(teacher: Teacher, weekend_list: typing.List[datetime.dat
                         break
 
                 if lesson:
+                    day_lessons_count += 1
                     yield lesson
                     continue
 
             for student in get_students(teacher.students_, LessonType.CITY):
                 if may_drive(student, lesson_datetime_interval):
+                    day_lessons_count += 1
                     yield Lesson(
                         student=student,
                         teacher=teacher,
@@ -309,7 +324,6 @@ def main():
     config_ = config_adapter.adapt(data=data)
 
     # main
-    weekend_list = [datetime.date.fromisoformat(weekend_date) for weekend_date in config_.weekend_list]
     teacher_list = [Teacher(name=str(i + 1)) for i in range(0, config_.teacher.count)]
     group_list = [create_group(group_config=group_config) for group_config in config_.group_list]
 
@@ -320,7 +334,7 @@ def main():
 
     def lesson_generator_():
         for teacher in teacher_list:
-            yield from schedule_by_teacher(teacher=teacher, weekend_list=weekend_list)
+            yield from schedule_by_teacher(teacher=teacher, config_=config_)
 
     lesson_generator = lesson_generator_()
 

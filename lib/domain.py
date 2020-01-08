@@ -17,7 +17,7 @@ class Student:
 
         self.group_: typing.Union[Group, None] = None
         self.teacher_ = None
-        self.lessons_ = []  # planned drive lessons
+        self.lessons_: typing.List[Lesson] = []  # planned drive lessons
 
     def assign_teacher_(self, teacher: 'Teacher') -> None:
         self.teacher_ = teacher

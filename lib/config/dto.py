@@ -1,3 +1,4 @@
+import datetime
 import typing
 
 
@@ -29,12 +30,18 @@ class Group:
 
 
 class Teacher:
-    def __init__(self, count: int):
+    def __init__(self, count: int, max_lessons_per_day: int):
         self.count = count
+        self.max_lessons_per_day = max_lessons_per_day
+
+
+class Weekend:
+    def __init__(self, weekend_list: typing.List[datetime.date]):
+        self.weekend_list: typing.List[datetime.date] = weekend_list
 
 
 class Config:
-    def __init__(self, weekend_list: typing.List[str], teacher: Teacher, group_list: typing.List[Group]):
-        self.weekend_list = weekend_list
+    def __init__(self, weekend: Weekend, teacher: Teacher, group_list: typing.List[Group]):
+        self.weekend: Weekend = weekend
         self.teacher: Teacher = teacher
         self.group_list: typing.List[Group] = group_list
