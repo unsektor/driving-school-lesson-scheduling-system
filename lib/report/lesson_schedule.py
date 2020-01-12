@@ -116,7 +116,7 @@ def may_drive(student: Student, lesson_datetime_interval: DateTimeInterval) -> b
         if a == b:
             return False
 
-    # Прошло 7 дней с начала обучения группы
+    # Прошло 7 дней сначала обучения группы
     if student.group_ and (student.group_.start_date + datetime.timedelta(days=7)) > lesson_datetime_interval.start:
         # print(f'Group is not ready to drive')
         return False
@@ -158,17 +158,17 @@ def may_drive(student: Student, lesson_datetime_interval: DateTimeInterval) -> b
         return True
 
 
-def is_weekend(teacher: Teacher, date: datetime.date, weekend_list: typing.List[datetime.date]) -> bool:
-    if date.day in [3, 8, 13, 18, 23, 28]:  # FIXME HARDCODE !
+def is_weekend(teacher: Teacher, datetime: datetime.datetime, weekend_list: typing.List[datetime.date]) -> bool:
+    if datetime.day in [3, 8, 13, 18, 23, 28]:  # FIXME HARDCODE !  range(3, 31, 5))
         return True
 
-    if date in weekend_list:
+    if datetime.date() in weekend_list:
         return True
 
     return False
 
 
-def schedule_by_teacher(teacher: Teacher, config_: config.dto.Config) -> typing.Generator[Lesson]:
+def schedule_by_teacher(teacher: Teacher, config_: config.dto.Config) -> typing.Iterator[Lesson]:
     def get_first_study_month(student_list: typing.List[Student]) -> datetime.date:
         group_start_date_set = set()
         for student in student_list:
@@ -204,6 +204,9 @@ def schedule_by_teacher(teacher: Teacher, config_: config.dto.Config) -> typing.
 
             yield DateTimeInterval(lesson_start_datetime, lesson_end_datetime)
 
+    if not len(teacher.students_) > 0:
+        return
+
     date_start_from = get_first_study_month(student_list=teacher.students_)
 
     cursor_date = date_start_from + datetime.timedelta(days=7)
@@ -218,7 +221,7 @@ def schedule_by_teacher(teacher: Teacher, config_: config.dto.Config) -> typing.
     # пока у преподавателя не все студенты завершили все часы вождения
     while not all_finished(student_list=teacher.students_):
         day_lessons_count = 0
-        if is_weekend(teacher=teacher, date=cursor_date, weekend_list=config_.weekend.weekend_list):  # у преподавателя выходной ?
+        if is_weekend(teacher=teacher, datetime=cursor_date, weekend_list=config_.weekend.weekend_list):  # у преподавателя выходной ?
             cursor_date += datetime.timedelta(days=1)
             continue
 
