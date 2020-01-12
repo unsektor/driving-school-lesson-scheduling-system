@@ -2,37 +2,44 @@
 <html>
     <head>
         <meta charset="utf-8"/>
-        <title></title>
+        <link rel="stylesheet" type="text/css" href="assets/default/default.css"/>
+        <title>Расписание занятий вождения</title>
     </head>
-    <body>
-        <style>
-            body {
-                font-size: 11px;
-                font-family: 'Arial', sans-serif;
-            }
+    <body class="body">
+        <div class="application">
+            <fieldset>
+                <legend>Выходные дни</legend>
+                <textarea class="weekend" rows="5" placeholder="2019-07-12"></textarea>
+            </fieldset>
 
-            table {
-                border: 1px solid #aaa;
-                border-collapse: collapse;
-                margin: 10px 0;
-            }
+            <fieldset>
+                <legend>Инструктор</legend>
+                <table>
+                    <tr>
+                        <td>Количество</td>
+                        <td><input type="number" class="teacher__count" placeholder="7" min="1"></td>
+                    </tr>
+                    <tr>
+                        <td>Максимальное количество занятий в день</td>
+                        <td><input type="number" class="teacher__max-lessons-per-day" placeholder="3"/></td>
+                    </tr>
+                </table>
+            </fieldset>
 
-            table td {
-                border: 1px solid #aaa;
-                padding: 5px;
-            }
+            <fieldset class="group-container">
+                <legend>Группа</legend>
+                <a class="group__add" href="javascript://">Добавить группу</a>
+            </fieldset>
 
-            textarea {
-                width: 100%;
-                min-height: 10em;
-            }
+            <input type="button" class="application__submit" value="Построить расписание">
 
-        </style>
+            <div class="schedule"></div>
+        </div>
 
-        <textarea onchange="window.application.main(JSON.parse(this.value))"></textarea>
-
-        <div id="application"></div>
-
-        <script src="./assets/default/default.js"></script>
+        <script type="text/javascript" src="assets/default/group-form-builder.js"></script>
+        <script type="text/javascript" src="assets/default/request-builder.js"></script>
+        <script type="text/javascript" src="assets/default/schedule-render.js"></script>
+        <script type="text/javascript" src="assets/default/application.js"></script>
+        <script>new Application();</script>
     </body>
 </html>
