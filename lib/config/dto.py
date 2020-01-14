@@ -3,9 +3,9 @@ import typing
 
 
 class Students:
-    def __init__(self, manual: int, auto: int):
-        self.manual: int = manual
-        self.auto: int = auto
+    def __init__(self, manual: typing.List[str], auto: typing.List[str]):
+        self.manual: typing.List[str] = manual
+        self.auto: typing.List[str] = auto
 
 
 class Schedule:

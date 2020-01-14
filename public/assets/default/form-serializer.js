@@ -40,15 +40,15 @@ const FormSerializer = function(groupFormBuilder) {
         this.get = function (group_element) {
             let group_students_data = {};
 
-            group_students_data['manual'] = parseInt(group_element.querySelector('.group__student-manual-count').value);
-            group_students_data['auto'] = parseInt(group_element.querySelector('.group__student-auto-count').value);
+            group_students_data['manual'] = group_element.querySelector('.group__student-manual-count').value.split("\n");
+            group_students_data['auto'] = group_element.querySelector('.group__student-auto-count').value.split("\n");
 
             return group_students_data;
         };
 
         this.set = function (group_element, value) {
-            group_element.querySelector('.group__student-manual-count').value = value['manual'];
-            group_element.querySelector('.group__student-auto-count').value = value['auto'];
+            group_element.querySelector('.group__student-manual-count').value = value['manual'].join("\n");
+            group_element.querySelector('.group__student-auto-count').value = value['auto'].join("\n");
         }
     };
 

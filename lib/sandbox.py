@@ -21,13 +21,13 @@ def create_group(group_config: config.dto.Group) -> Group:
         ))
 
     # populate with students
-    for number in range(0, group_config.students.manual):
-        student = Student(group_config.name + '_M_' + str(number + 1), program=Program.MANUAL)
+    for student_ in group_config.students.manual:
+        student = Student(student_, program=Program.MANUAL)
         student.group_ = group
         group.append(student)
 
-    for number in range(0, group_config.students.auto):
-        student = Student(group_config.name + '_A_' + str(number + 1), program=Program.AUTO)
+    for student_ in group_config.students.auto:
+        student = Student(student_, program=Program.AUTO)
         student.group_ = group
         group.append(student)
 

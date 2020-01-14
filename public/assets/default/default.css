@@ -28,8 +28,8 @@
 .group { margin-bottom: 5px }
 .group__name {}
 .group__start-date {}
-.group__student-manual-count {}
-.group__student-auto-count {}
+.group__student-manual-count { width: 100% }
+.group__student-auto-count { width: 100% }
 
 .group__add { display: block ; margin-bottom: 5px }
 .group__remove {}
