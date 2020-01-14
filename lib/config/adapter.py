@@ -44,7 +44,7 @@ class TeacherAdapter:
 class WeekdayAdapter:
     def adapt(self, data: list) -> config.dto.Weekend:
         return config.dto.Weekend(
-            weekend_list=[datetime.date.fromisoformat(date) for date in data]
+            weekend_list=[datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in data]
         )
 
 

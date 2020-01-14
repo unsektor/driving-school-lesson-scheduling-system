@@ -23,8 +23,8 @@ class DateTimeInterval:
 
 class TimeInterval:
     def __init__(self, start: str, end: str):
-        self.start_time = datetime.time.fromisoformat(start)
-        self.end_time = datetime.time.fromisoformat(end)
+        self.start_time = datetime.datetime.strptime(start, '%H:%M')
+        self.end_time = datetime.datetime.strptime(end, '%H:%M')
 
 
 class Schedule:

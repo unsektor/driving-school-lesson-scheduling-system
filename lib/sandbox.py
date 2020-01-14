@@ -10,7 +10,7 @@ from domain import Program, Student, Group
 def create_group(group_config: config.dto.Group) -> Group:
     group = Group(
         name=group_config.name,
-        start_date=datetime.datetime.fromisoformat(group_config.date_start),
+        start_date=datetime.datetime.strptime(group_config.date_start, '%Y-%m-%d'),
     )
 
     # add schedule
