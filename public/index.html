@@ -40,6 +40,84 @@
         <script type="text/javascript" src="assets/default/request-builder.js"></script>
         <script type="text/javascript" src="assets/default/schedule-render.js"></script>
         <script type="text/javascript" src="assets/default/application.js"></script>
-        <script>new Application();</script>
+        <script>window.addEventListener('DOMContentLoaded', e => new Application());</script>
     </body>
 </html>
+
+<template id="template__group">
+    <table class="group">
+        <tr>
+            <td>Название группы</td>
+            <td><input type="text" class="group__name" placeholder="13B" required/></td>
+        </tr>
+        <tr>
+            <td>Дата начала обучения</td>
+            <td><input type="text" class="group__start-date" placeholder="yyyy-mm-dd (eg. 2019-06-30)" required/></td>
+        </tr>
+        <tr>
+            <td>Ученики</td>
+            <td>
+                <table>
+                    <tr>
+                        <td>Механика</td>
+                        <td><input type="text" class="group__student-manual-count" placeholder="14" required/></td>
+                    </tr>
+                    <tr>
+                        <td>Автомат</td>
+                        <td><input type="text" class="group__student-auto-count" placeholder="4" required/></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>Расписание</td>
+            <td class="group__schedule-list">
+                <a class="group__schedule-add" href="javascript://">Добавить расписание</a>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <a class="group__remove" href="javascript://">Удалить группу</a>
+            </td>
+        </tr>
+    </table>
+</template>
+
+<template id="template__group-schedule">
+    <div class="group__schedule">
+        <table class="group__schedule-table">
+            <tr>
+                <td>День недели</td>
+                <td>
+                    <label><input type="radio" class="group__schedule-weekday" value="0">понедельник</label>
+                    <label><input type="radio" class="group__schedule-weekday" value="1">вторник</label>
+                    <label><input type="radio" class="group__schedule-weekday" value="2">среда</label>
+                    <label><input type="radio" class="group__schedule-weekday" value="3">четверг</label>
+                    <label><input type="radio" class="group__schedule-weekday" value="4">пятница</label>
+                    <label><input type="radio" class="group__schedule-weekday" value="5">суббота</label>
+                    <label><input type="radio" class="group__schedule-weekday" value="6">воскресение</label>
+                </td>
+            </tr>
+            <tr>
+                <td>время</td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>начало</td>
+                            <td><input class="group__schedule-start-time" type="text" placeholder="12:00"/></td>
+                        </tr>
+                        <tr>
+                            <td>конец</td>
+                            <td><input class="group__schedule-end-time" type="text" placeholder="14:00"/></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <a class="group__schedule-remove" href="javascript://">Удалить расписание</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</template>

@@ -1,78 +1,6 @@
 const GroupFormBuilder = function () {
-    let group_template =
-        '<table class="group">' +
-        '    <tr>' +
-        '        <td>Название группы</td>' +
-        '        <td><input type="text" class="group__name" placeholder="13B" required/></td>' +
-        '    </tr>' +
-        '    <tr>' +
-        '        <td>Дата начала обучения</td>' +
-        '        <td><input type="text" class="group__start-date" placeholder="yyyy-mm-dd (eg. 2019-06-30)" required/></td>' +
-        '    </tr>' +
-        '    <tr>' +
-        '        <td>Ученики</td>' +
-        '        <td>' +
-        '            <table>' +
-        '                <tr>' +
-        '                    <td>Механика</td>' +
-        '                    <td><input type="text" class="group__student-manual-count" placeholder="14" required/></td>' +
-        '                </tr>' +
-        '                <tr>' +
-        '                    <td>Автомат</td>' +
-        '                    <td><input type="text" class="group__student-auto-count" placeholder="4" required/></td>' +
-        '                </tr>' +
-        '            </table>' +
-        '        </td>' +
-        '    </tr>' +
-        '    <tr>' +
-        '        <td>Расписание</td>' +
-        '        <td class="group__schedule-list">' +
-        '            <a class="group__schedule-add" href="javascript://">Добавить расписание</a>' +
-        '        </td>' +
-        '    </tr>' +
-        '    <tr>' +
-        '        <td colspan="2">' +
-        '            <a class="group__remove" href="javascript://">Удалить группу</a>' +
-        '        </td>' +
-        '    </tr>' +
-        '</table>';
-
-    let group_schedule_template =
-        '<div class="group__schedule"><table class="group__schedule-table">' +
-        '    <tr>' +
-        '        <td>День недели</td>' +
-        '        <td>' +
-        '            <label><input type="radio" class="group__schedule-weekday" value="0">понедельник</label>' +
-        '            <label><input type="radio" class="group__schedule-weekday" value="1">вторник</label>' +
-        '            <label><input type="radio" class="group__schedule-weekday" value="2">среда</label>' +
-        '            <label><input type="radio" class="group__schedule-weekday" value="3">четверг</label>' +
-        '            <label><input type="radio" class="group__schedule-weekday" value="4">пятница</label>' +
-        '            <label><input type="radio" class="group__schedule-weekday" value="5">суббота</label>' +
-        '            <label><input type="radio" class="group__schedule-weekday" value="6">воскресение</label>' +
-        '        </td>' +
-        '    </tr>' +
-        '    <tr>' +
-        '        <td>время</td>' +
-        '        <td>' +
-        '            <table>' +
-        '                <tr>' +
-        '                    <td>начало</td>' +
-        '                    <td><input class="group__schedule-start-time" type="text" placeholder="12:00"/></td>' +
-        '                </tr>' +
-        '                <tr>' +
-        '                    <td>конец</td>' +
-        '                    <td><input class="group__schedule-end-time" type="text" placeholder="14:00"/></td>' +
-        '                </tr>' +
-        '            </table>' +
-        '        </td>' +
-        '    </tr>' +
-        '    <tr>' +
-        '        <td colspan="2">' +
-        '            <a class="group__schedule-remove" href="javascript://">Удалить расписание</a>' +
-        '        </td>' +
-        '    </tr>' +
-        '</table></div>';
-
+    const group_template = document.getElementById('template__group');
+    const group_schedule_template = document.getElementById('template__group-schedule');
 
     function _uuid() {
         // https://www.w3resource.com/javascript-exercises/javascript-math-exercise-23.php
@@ -101,7 +29,7 @@ const GroupFormBuilder = function () {
                 let group_schedule_list = _lookup_parent_element_by_class_name(e.target, 'group__schedule-list');
                 if (!!group_schedule_list) {
                     let container_uuid = _uuid();
-                    let container = document.createRange().createContextualFragment(group_schedule_template);
+                    let container = document.importNode(group_schedule_template.content, true);
                     container.querySelectorAll('input').forEach((e) => e.name = container_uuid);
 
                     bind_group_remove_schedule(container);
@@ -145,7 +73,7 @@ const GroupFormBuilder = function () {
 
                 let group_container = _lookup_parent_element_by_class_name(e.target, 'group-container');
                 if (!!group_container) {
-                    let group = document.createRange().createContextualFragment(group_template);
+                    let group = document.importNode(group_template.content, true);
 
                     bind_group_remove_schedule(group);
                     bind_group_add_schedule(group);
