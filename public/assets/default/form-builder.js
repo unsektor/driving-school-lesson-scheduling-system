@@ -1,4 +1,7 @@
-const GroupFormBuilder = function () {
+// makes form dynamic
+const FormBuilder = function () {
+    const self = this;
+
     const group_template = document.getElementById('template__group');
     const group_schedule_template = document.getElementById('template__group-schedule');
 
@@ -28,14 +31,8 @@ const GroupFormBuilder = function () {
 
                 let group_schedule_list = _lookup_parent_element_by_class_name(e.target, 'group__schedule-list');
                 if (!!group_schedule_list) {
-                    let container_uuid = _uuid();
-                    let container = document.importNode(group_schedule_template.content, true);
-                    container.querySelectorAll('input').forEach((e) => e.name = container_uuid);
-
-                    bind_group_remove_schedule(container);
-                    group_schedule_list.appendChild(container)
+                    self.add_group_schedule(group_schedule_list)
                 }
-
             })
         });
     }
@@ -66,6 +63,31 @@ const GroupFormBuilder = function () {
         });
     }
 
+    this.add_group = function (group_container) {  // fixme refactoring required
+        let group = document.importNode(group_template.content, true);
+
+        bind_group_remove_schedule(group);
+        bind_group_add_schedule(group);
+        bind_group_remove(group);
+
+        group_container.appendChild(group);
+
+        // FIXME weak, race condition. `group` becomes empty `DocumentFragment` after appending it container, WTF ?!
+        return group_container.lastElementChild;
+    };
+
+    this.add_group_schedule = function (group_schedule_list) {
+        let container_uuid = _uuid();
+        let container = document.importNode(group_schedule_template.content, true);
+        container.querySelectorAll('input').forEach((e) => e.name = container_uuid);
+
+        bind_group_remove_schedule(container);
+        group_schedule_list.appendChild(container)
+
+        // FIXME weak, race condition. `group` becomes empty `DocumentFragment` after appending it container, WTF ?!
+        return group_schedule_list.lastElementChild;
+    };
+
     this.bind = function (element) {
         element.querySelectorAll('.group__add').forEach(function (element) {
             element.addEventListener('click', function (e) {
@@ -73,13 +95,7 @@ const GroupFormBuilder = function () {
 
                 let group_container = _lookup_parent_element_by_class_name(e.target, 'group-container');
                 if (!!group_container) {
-                    let group = document.importNode(group_template.content, true);
-
-                    bind_group_remove_schedule(group);
-                    bind_group_add_schedule(group);
-                    bind_group_remove(group);
-
-                    group_container.appendChild(group)
+                    self.add_group(group_container);
                 }
             })
         });

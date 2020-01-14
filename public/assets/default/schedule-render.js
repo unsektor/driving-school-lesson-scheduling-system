@@ -6,7 +6,7 @@ const ScheduleRender = function () {
                 transformed_data[lesson['teacher']] = {/* month */};
             }
 
-            // console.log(data)
+            console.log(data)
 
             let lesson_date_start = new Date(lesson.interval[0].replace(' ', 'T'));
             let lesson_date_end = new Date(lesson.interval[1].replace(' ', 'T'));
@@ -63,7 +63,7 @@ const ScheduleRender = function () {
                 let value = '';
                 let style = '';
 
-                // console.log(data);
+                console.log(data);
                 if (index in data) {
                     // value = interval
                     if (interval in data[index]) {
