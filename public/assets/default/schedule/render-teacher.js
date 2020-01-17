@@ -1,4 +1,4 @@
-const ScheduleRender = function () {
+const TeacherScheduleRender = function () {
     function transform_data(data) {
         let transformed_data = {};
         for (let lesson of data) {

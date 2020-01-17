@@ -45,7 +45,7 @@
 .group__schedule-weekday { }
 .group__schedule-table { margin-bottom: 5px } 
 
-.group__schedule-table label { display: block; }
+.group__schedule-table label /* fixme */ { display: block; }
 .group__schedule-start-time {}
 .group__schedule-end-time {}
 
@@ -55,6 +55,10 @@
 }
 .group__schedule-remove {}
 
+
+.schedule-type {}
+.schedule-type /* fixme */ label { display: block; }
+.schedule-type__type {}
 
 .schedule {}
 .schedule__month {

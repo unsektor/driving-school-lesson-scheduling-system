@@ -4,17 +4,50 @@ const Application = function () {
     // initialize dependencies. todo: use DI instead
     const formBuilder = new FormBuilder();
     const formSerializer = new FormSerializer(formBuilder);
-    const scheduleRender = new ScheduleRender();
 
     // ui
     const application = document.querySelector('.application');
     const button = application.querySelector('.application__submit');
+
+    const schedule_type = application.querySelector('.schedule-type');
     const schedule = application.querySelector('.schedule');
 
     // bind ui
     formBuilder.bind(application);
+
+    const render = new function () {   // todo generalize with render contract
+        const teacherScheduleRender = new TeacherScheduleRender();  // todo generalize with render contract
+        const studentScheduleRender = new StudentScheduleRender();  // todo generalize with render contract
+
+        const render_map = {
+            'teacher': teacherScheduleRender,
+            'student': studentScheduleRender,
+        };
+
+        this.render = function (data, render_type) {
+            const render = render_map[render_type];
+
+            if (undefined === render) {
+                throw new Error('Undefined render type ' + render_type);  // Should never happen
+            }
+
+            return render.render(data);
+        }
+    };
+
+    function resolve_render_type(render_type) {
+        for (let render_type_element of render_type.querySelectorAll('.schedule-type__type')) {
+            if (render_type_element.checked) {
+                return render_type_element.value;
+            }
+        }
+
+        throw new Error('Unable to resolve render type');
+    }
+
     button.addEventListener('click', function (e) {
-        let data = formSerializer.get_data(application);
+        const data = formSerializer.get_data(application);
+        const render_type = resolve_render_type(schedule_type);
 
         schedule.innerText = '';  // clear
 
@@ -25,7 +58,7 @@ const Application = function () {
                 }
                 throw new Error('Something went wrong on api server!');
             })
-            .then(data => schedule.innerHTML = scheduleRender.render(data));
+            .then(data => schedule.innerHTML = render.render(data, render_type));
     });
 
     // restore last state

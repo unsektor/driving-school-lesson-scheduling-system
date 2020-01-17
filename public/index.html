@@ -31,6 +31,12 @@
                 <a class="group__add" href="javascript://">Добавить группу</a>
             </fieldset>
 
+            <fieldset class="schedule-type">
+                <legend>Тип расписания</legend>
+                <label><input type="radio" class="schedule-type__type" name="_schedule-type" value="teacher" checked>Инструктор</label>
+                <label><input type="radio" class="schedule-type__type" name="_schedule-type" value="student">Ученик</label>
+            </fieldset>
+
             <input type="button" class="application__submit" value="Построить расписание">
 
             <div class="schedule"></div>
@@ -38,7 +44,8 @@
 
         <script type="text/javascript" src="assets/default/form-builder.js"></script>
         <script type="text/javascript" src="assets/default/form-serializer.js"></script>
-        <script type="text/javascript" src="assets/default/schedule-render.js"></script>
+        <script type="text/javascript" src="assets/default/schedule/render-teacher.js"></script>
+        <script type="text/javascript" src="assets/default/schedule/render-student.js"></script>
         <script type="text/javascript" src="assets/default/application.js"></script>
         <script>window.addEventListener('DOMContentLoaded', e => new Application());</script>
     </body>
