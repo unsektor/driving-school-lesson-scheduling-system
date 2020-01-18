@@ -3,7 +3,9 @@ const FormSerializer = function(groupFormBuilder) {
     const weekend = new function () {
         this.get = function(application_element) {
             let weekend_element = application_element.querySelector('.weekend');
-            return weekend_element.value.split("\n");  // .filter()
+            return weekend_element.value.split("\n")
+                .filter(value => value !== '')
+                .map(value => value.trim())
         };
 
         this.set = function(application_element, value) {
@@ -17,11 +19,11 @@ const FormSerializer = function(groupFormBuilder) {
             let teacher_data = {};
 
             // 1.
-            let teacher_count = application_element.querySelector('.teacher__count').value;
+            let teacher_count = application_element.querySelector('.teacher__count').value.trim();
             teacher_data['count'] = parseInt(teacher_count);
 
             // 2.
-            let max_lessons_per_day = application_element.querySelector('.teacher__max-lessons-per-day').value;
+            let max_lessons_per_day = application_element.querySelector('.teacher__max-lessons-per-day').value.trim();
             teacher_data['max_lessons_per_day'] = parseInt(max_lessons_per_day);
 
             return teacher_data;
@@ -40,8 +42,15 @@ const FormSerializer = function(groupFormBuilder) {
         this.get = function (group_element) {
             let group_students_data = {};
 
-            group_students_data['manual'] = group_element.querySelector('.group__student-manual-count').value.split("\n");
-            group_students_data['auto'] = group_element.querySelector('.group__student-auto-count').value.split("\n");
+            group_students_data['manual'] = group_element.querySelector('.group__student-manual-count').value
+                .split("\n")
+                .filter(value => value !== '')
+                .map(value => value.trim());
+
+            group_students_data['auto'] = group_element.querySelector('.group__student-auto-count').value
+                .split("\n")
+                .filter(value => value !== '')
+                .map(value => value.trim());
 
             return group_students_data;
         };
@@ -68,8 +77,8 @@ const FormSerializer = function(groupFormBuilder) {
 
             schedule_data['weekday'] = resolve_weekday(schedule_element);
             schedule_data['interval'] = {
-                "start_time": document.querySelector('.group__schedule-start-time').value,
-                "end_time": document.querySelector('.group__schedule-end-time').value
+                "start_time": schedule_element.querySelector('.group__schedule-start-time').value.trim(),
+                "end_time": schedule_element.querySelector('.group__schedule-end-time').value.trim()
             };
 
             return schedule_data;
@@ -77,8 +86,8 @@ const FormSerializer = function(groupFormBuilder) {
 
         this.set = function (schedule_element, value) {
             schedule_element.querySelector(`.group__schedule-weekday[value="${value['weekday']}"]`).checked = true;
-            schedule_element.querySelector('.group__schedule-start-time').value = value['interval']['start_time'];
-            schedule_element.querySelector('.group__schedule-end-time').value = value['interval']['end_time'];
+            schedule_element.querySelector('.group__schedule-start-time').value = value['interval']['start_time'].trim();
+            schedule_element.querySelector('.group__schedule-end-time').value = value['interval']['end_time'].trim();
         }
     };
 
@@ -109,8 +118,8 @@ const FormSerializer = function(groupFormBuilder) {
         this.get = function (group_element) {
             let group_data = {};
 
-            group_data['name'] = group_element.querySelector('.group__name').value;
-            group_data['date_start'] = group_element.querySelector('.group__start-date').value;
+            group_data['name'] = group_element.querySelector('.group__name').value.trim();
+            group_data['date_start'] = group_element.querySelector('.group__start-date').value.trim();
             group_data['students'] = group_students.get(group_element);
             group_data['schedule'] = group_schedules.get(group_element);
 
