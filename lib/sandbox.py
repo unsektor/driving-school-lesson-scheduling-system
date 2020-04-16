@@ -11,6 +11,7 @@ def create_group(group_config: config.dto.Group) -> Group:
     group = Group(
         name=group_config.name,
         start_date=datetime.datetime.strptime(group_config.date_start, '%Y-%m-%d'),
+        examination_date=datetime.datetime.strptime(group_config.examination_date, '%Y-%m-%d'),
     )
 
     # add schedule

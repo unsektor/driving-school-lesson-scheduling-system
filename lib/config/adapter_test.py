@@ -23,6 +23,7 @@ class GroupAdapterTest(unittest.TestCase):
         data = {
             "name": "42x",
             "date_start": "2019-01-01",
+            "date_start": "2019-01-02",
             "students": {},
             "schedule_list": [],
         }
@@ -40,6 +41,7 @@ class GroupAdapterTest(unittest.TestCase):
 
             self.assertEqual(group.name, "42x")
             self.assertEqual(group.date_start, "2019-01-01")
+            self.assertEqual(group.examination_date, "2019-01-02")
             self.assertEqual(group.students, [])
             self.assertEqual(group.schedule_list, [])
 

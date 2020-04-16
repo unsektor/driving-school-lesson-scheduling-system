@@ -54,13 +54,28 @@ const StudentScheduleRender = function () {
 
         let i = 0;
         for (let lesson of lesson_list) {
-            let style = lesson.type === 0 ? 'style="background: #ddd"' : '';
+            let style = '';
+
+
+            if (lesson.type === 0) {
+                style = 'style="background: #ddd"';
+            } else if (lesson.type === 2) {
+                style = 'style="background: #900"; color: #fff';
+            }
+
             html += '<tr>';
             html += `<td>${++i}</td>`;
             html += `<td ${style}>${lesson.date.year}.${lesson.date.month+1}.${lesson.date.day} (${day_of_week})</td>`;
             html += `<td ${style}>${lesson.interval}</td>`;
 
-            let type = lesson.type === 0 ? 'площадка' : 'город';
+            let type;
+            if (lesson.type === 0) {
+                type = 'площадка';
+            } else if (lesson.type === 1) {
+                type = 'город';
+            } else if (lesson.type === 2) {
+                type = 'внутренний экзамен';
+            }
 
             html += `<td>${type}</td>`;
             html += '</tr>';

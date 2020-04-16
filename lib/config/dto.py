@@ -20,11 +20,13 @@ class Group:
             self,
             name: str,
             date_start: str,
+            examination_date: str,
             students: Students,
             schedule_list:  typing.List[Schedule]
     ):
         self.name: str = name
         self.date_start: str = date_start
+        self.examination_date: str = examination_date
         self.students: Students = students
         self.schedule_list: typing.List[Schedule] = schedule_list
 

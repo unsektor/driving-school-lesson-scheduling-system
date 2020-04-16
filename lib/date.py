@@ -31,3 +31,23 @@ class Schedule:
     def __init__(self, day: int, interval: TimeInterval):
         self.weekday: int = day
         self.interval: TimeInterval = interval
+
+
+def create_interval(day_date: datetime.datetime, start_time: str, end_time: str) -> DateTimeInterval:
+    start_time_ = datetime.datetime.strptime(start_time, '%H:%M')
+    end_time_ = datetime.datetime.strptime(end_time, '%H:%M')
+
+    lesson_start_datetime = day_date.replace(
+        hour=start_time_.hour,
+        minute=start_time_.minute,
+    )
+
+    lesson_end_datetime = day_date.replace(
+        hour=end_time_.hour,
+        minute=end_time_.minute,
+    )
+
+    if end_time == '00:00':
+        lesson_end_datetime += datetime.timedelta(days=1)
+
+    return DateTimeInterval(start=lesson_start_datetime, end=lesson_end_datetime)

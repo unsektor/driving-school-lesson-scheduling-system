@@ -28,6 +28,7 @@ class GroupAdapter:  # (mapper)
         return config.dto.Group(
             name=data['name'],
             date_start=data['date_start'],
+            examination_date=data['examination_date'],
             students=self.students_adapter.adapt(data['students']),
             schedule_list=[self.schedule_adapter.adapt(schedule) for schedule in data['schedule']]
         )

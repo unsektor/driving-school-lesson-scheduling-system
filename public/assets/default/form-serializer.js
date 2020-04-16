@@ -120,6 +120,7 @@ const FormSerializer = function(groupFormBuilder) {
 
             group_data['name'] = group_element.querySelector('.group__name').value.trim();
             group_data['date_start'] = group_element.querySelector('.group__start-date').value.trim();
+            group_data['examination_date'] = group_element.querySelector('.group__examination-date').value.trim();
             group_data['students'] = group_students.get(group_element);
             group_data['schedule'] = group_schedules.get(group_element);
 
@@ -129,6 +130,7 @@ const FormSerializer = function(groupFormBuilder) {
         this.set = function (group_element, value) {
             group_element.querySelector('.group__name').value = value['name'];
             group_element.querySelector('.group__start-date').value = value['date_start'];
+            group_element.querySelector('.group__examination-date').value = value['examination_date'];
 
             group_students.set(group_element, value['students']);
             group_schedules.set(group_element, value['schedule']);
@@ -165,7 +167,7 @@ const FormSerializer = function(groupFormBuilder) {
             "groups": groups.get(application_element),
         };
     };
-    
+
     this.set_data = function(application_element, value) {
         weekend.set(application_element, value['weekend']);
         teacher.set(application_element, value['teacher']);

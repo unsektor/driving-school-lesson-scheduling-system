@@ -2,6 +2,7 @@ import datetime
 import typing
 
 import date
+import uuid
 
 
 class Program:
@@ -19,6 +20,8 @@ class Student:
         self.teacher_ = None
         self.lessons_: typing.List[Lesson] = []  # planned drive lessons
 
+        self.uuid_ = str(uuid.uuid4())
+
     def assign_teacher_(self, teacher: 'Teacher') -> None:
         self.teacher_ = teacher
         teacher.add_student(self)
@@ -28,15 +31,19 @@ class Student:
 
 
 class Group(list):
-    def __init__(self, name: str, start_date: datetime.datetime):
+    def __init__(self, name: str, start_date: datetime.datetime, examination_date: datetime.datetime):
         super().__init__()
 
         self.name = name
         self.start_date = start_date
+        self.examination_date = examination_date
         self.schedule_list: typing.List[date.Schedule] = []
 
     def add_schedule(self, schedule: date.Schedule):
         self.schedule_list.append(schedule)
+
+    def __repr__(self):
+        return self.name + f'({len(self)})'
 
 
 class Teacher:
@@ -54,6 +61,7 @@ class Teacher:
 class LessonType:
     RING = 0  # площадка
     CITY = 1  # город
+    INTERNAL_EXAMINATION = 2  # внутренний экзамен
 
 
 class Lesson:
@@ -74,5 +82,5 @@ class Lesson:
         student.hours -= self.HOURS_DURATION
         student.lessons_.append(self)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Lesson(student={self.student!r}, teacher={self.teacher!r}, interval={self.interval!r})'
