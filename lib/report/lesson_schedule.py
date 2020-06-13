@@ -179,18 +179,27 @@ def is_weekend(teacher: Teacher, datetime: datetime.datetime, weekend_list: typi
 
     return False
 
+# todo: consider to use LRU cache
+def is_examination_day(datetime: datetime.datetime, group_list: typing.List[Group]) -> bool:
+    for group in group_list:
+        if datetime == group.examination_date:
+            return True
+    return False
+
 
 def lesson_interval_generator(day_date: datetime.datetime) -> typing.Iterator[DateTimeInterval]:  # per day
     for start_time, end_time in DAY_WORK_HOUR_INTERVAL_LIST:
         yield date.create_interval(day_date=day_date, start_time=start_time, end_time=end_time)
 
 
-def group_student_cycle(student_list_: typing.List[Student]) -> typing.Iterator[Student]:
+def group_student_cycle(student_list_: typing.List[Student], threshold: int = 0) -> typing.Iterator[Student]:
+    assert threshold >= 0
+
     all_finished = False
     while not all_finished:
         all_finished = True
         for student_ in student_list_:
-            if student_.hours > 0:
+            if student_.hours > threshold:
                 all_finished = False
                 yield student_
 
@@ -257,7 +266,9 @@ def markup_ring(
     cursor_date = since_date  # copy to mutate
 
     while scheduled_hours < to_schedule_hours:  # while not all finished  # TODO check not out of examination date
-        if is_weekend(teacher=teacher, datetime=cursor_date, weekend_list=config_.weekend.weekend_list):  # у инструктора выходной ?
+        if is_weekend(teacher=teacher, datetime=cursor_date, weekend_list=config_.weekend.weekend_list) \
+           or is_examination_day(datetime=cursor_date, group_list=group_list):
+            # если у инструктора выходной или у группы экзаменационный день
             cursor_date += datetime.timedelta(days=1)
             continue  # go to next day
 
@@ -369,7 +380,8 @@ def markup_city(
 
     while cursor_date < final_max_date:  # while not all finished
         # todo `is_examination_date`
-        if is_weekend(teacher=teacher, datetime=cursor_date, weekend_list=config_.weekend.weekend_list):  # у инструктора выходной ?
+        if is_weekend(teacher=teacher, datetime=cursor_date, weekend_list=config_.weekend.weekend_list) \
+           or is_examination_day(datetime=cursor_date, group_list=group_list):
             cursor_date += datetime.timedelta(days=1)
             continue  # go to next day
 
@@ -423,7 +435,7 @@ def schedule_city(
         group_city_interval_list = list(city_entry_dict[group_name].values())
         lesson_datetime_interval_generator = sequence.distribute2(list(group_city_interval_list), chunk_count=3)
 
-        for student in group_student_cycle(student_list):
+        for student in group_student_cycle(student_list, threshold=Lesson.HOURS_DURATION * 1):  # preserve one lesson
             lesson_datetime_interval = next(lesson_datetime_interval_generator)
             while lesson_datetime_interval in lesson_datetime_interval_set:
                 lesson_datetime_interval = next(lesson_datetime_interval_generator)
@@ -436,6 +448,21 @@ def schedule_city(
             ))
 
             lesson_datetime_interval_set.add(lesson_datetime_interval)
+
+        group_ = student.group_  # fixme weak
+        group_examination_date_interval_list = lesson_interval_generator(group_.examination_date)
+
+        # assert len(group_examination_date_interval_list) >= len(student_list)
+        for student in student_list:
+            try:
+                lesson_list.append(Lesson(
+                    student=student,
+                    teacher=teacher,
+                    type_=LessonType.INTERNAL_EXAMINATION,
+                    interval=next(group_examination_date_interval_list),
+                ))
+            except StopIteration:
+                raise  # too many students to schedule lessons for group internal examination date
 
     return lesson_list
 
