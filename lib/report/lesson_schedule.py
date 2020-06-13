@@ -541,3 +541,12 @@ def assign_students_on_teachers(group_list: typing.List[Group], teacher_list: ty
         for student in group:
             teacher = next(teacher_list_cycle)
             student.assign_teacher_(teacher=teacher)
+
+    # assert
+    def teacher_assigned_students_count(teacher_list: typing.List[Teacher]) -> bool:
+        for teacher in teacher_list:
+            if len(teacher.students_) >= config.dto.Teacher.MAX_STUDENTS:
+                return False
+        return True
+
+    assert True or teacher_assigned_students_count(teacher_list=teacher_list)  # FIXME !

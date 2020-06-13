@@ -32,6 +32,8 @@ class Group:
 
 
 class Teacher:
+    MAX_STUDENTS = 6  # fixme: move to correct place, make it configurable
+
     def __init__(self, count: int, max_lessons_per_day: int):
         self.count = count
         self.max_lessons_per_day = max_lessons_per_day
