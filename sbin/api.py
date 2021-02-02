@@ -13,6 +13,11 @@ import practice.sandbox
 import practice.report.lesson_schedule
 import practice.config.adapter
 
+# theory
+import theory.config.adapter
+import theory.report
+import theory.report.lesson_schedule
+
 
 def _create_lesson_schedule(data: dict):
     # model
@@ -50,7 +55,34 @@ def _create_lesson_schedule(data: dict):
     }
 
 
-@bottle.post('/api/report/lesson-schedule')
+def _create_theory_lesson_schedule(data: dict) -> dict:
+    # model
+    config_adapter = theory.config.adapter.ConfigAdapter()
+    config_ = config_adapter.adapt(data=data)
+
+    lesson_generator = theory.report.lesson_schedule.create_for_group_list(config_=config_)
+
+    day_schedule = set()
+    lesson_generator_ = []
+
+    for lesson in lesson_generator:
+        day_schedule.add(lesson['interval'].start.strftime('%H:%M') + '-' + lesson['interval'].end.strftime('%H:%M'))
+        lesson_ = lesson
+        lesson_['interval'] = [
+            lesson['interval'].start.strftime('%Y-%m-%d %H:%M:00'),
+            lesson['interval'].end.strftime('%Y-%m-%d %H:%M:00')
+        ]
+        lesson_generator_.append(lesson_)
+
+    return {
+        "meta": {
+            "day_schedule": list(sorted(day_schedule))
+        },
+        "data": lesson_generator_,
+    }
+
+
+@bottle.post('/api/report/practice-lesson-schedule')
 def report_lesson_schedule():  # controller
     try:
         data = json.load(bottle.request.body)
@@ -60,6 +92,18 @@ def report_lesson_schedule():  # controller
 
     bottle.response.content_type = 'application/json; charset=utf8'
     return json.dumps(_create_lesson_schedule(data))
+
+
+@bottle.post('/api/report/theory-lesson-schedule')
+def report_theory_lesson_schedule():  # controller
+    try:
+        data = json.load(bottle.request.body)
+    except json.JSONDecodeError:
+        bottle.response.status = 400
+        return
+
+    bottle.response.content_type = 'application/json; charset=utf8'
+    return json.dumps(_create_theory_lesson_schedule(data))
 
 
 if __name__ == '__main__':

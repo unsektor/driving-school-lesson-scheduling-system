@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" type="text/css" href="assets/default/default.css"/>
+        <title>Расписание / класс</title>
+    </head>
+    <body class="body">
+        <div class="application">
+            <fieldset>
+                <legend>Выходные дни</legend>
+                <textarea class="weekend" rows="5" placeholder="2019-07-12"></textarea>
+            </fieldset>
+
+            <fieldset class="group-container">
+                <legend>Группа</legend>
+                <a class="group__add" href="javascript://">Добавить группу</a>
+            </fieldset>
+
+            <input type="button" class="application__submit" value="Построить расписание">
+
+            <div class="schedule"></div>
+        </div>
+
+        <script type="text/javascript" src="assets/theory/form-builder.js"></script>
+        <script type="text/javascript" src="assets/theory/form-serializer.js"></script>
+        <script type="text/javascript" src="assets/theory/schedule/render-default.js"></script>
+        <script type="text/javascript" src="assets/theory/application.js"></script>
+        <script>window.addEventListener('DOMContentLoaded', e => new Application());</script>
+    </body>
+</html>
+
+<template id="template__group">
+    <table class="group">
+        <tr>
+            <td>Название группы</td>
+            <td><input type="text" class="group__name" placeholder="13B" required/></td>
+        </tr>
+        <tr>
+            <td>Дата начала обучения</td>
+            <td><input type="text" class="group__start-date" placeholder="yyyy-mm-dd (eg. 2019-06-30)" required/></td>
+        </tr>
+        <tr>
+            <td>Количество занятий</td>
+            <td><input class="group__lesson-count" type="text" placeholder="<= 37" value="37"/></td>
+        </tr>
+        <tr>
+            <td>Расписание</td>
+            <td class="group__schedule-list">
+                <a class="group__schedule-add" href="javascript://">Добавить расписание</a>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <a class="group__remove" href="javascript://">Удалить группу</a>
+            </td>
+        </tr>
+    </table>
+</template>
+
+<template id="template__group-schedule">
+    <div class="group__schedule">
+        <table class="group__schedule-table">
+            <tr>
+                <td>День недели</td>
+                <td>
+                    <label><input type="radio" class="group__schedule-weekday" value="0">понедельник</label>
+                    <label><input type="radio" class="group__schedule-weekday" value="1">вторник</label>
+                    <label><input type="radio" class="group__schedule-weekday" value="2">среда</label>
+                    <label><input type="radio" class="group__schedule-weekday" value="3">четверг</label>
+                    <label><input type="radio" class="group__schedule-weekday" value="4">пятница</label>
+                    <label><input type="radio" class="group__schedule-weekday" value="5">суббота</label>
+                    <label><input type="radio" class="group__schedule-weekday" value="6">воскресение</label>
+                </td>
+            </tr>
+            <tr>
+                <td>время</td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>начало</td>
+                            <td><input class="group__schedule-start-time" type="text" placeholder="12:00"/></td>
+                        </tr>
+                        <tr>
+                            <td>конец</td>
+                            <td><input class="group__schedule-end-time" type="text" placeholder="14:00"/></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <a class="group__schedule-remove" href="javascript://">Удалить расписание</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</template>
