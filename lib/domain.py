@@ -13,14 +13,19 @@ class Program:
 class Student:
     def __init__(self, name: str, program: int):
         self.name = name
-        self.hours = 58  # / 2 = 29
+
+        if program == Program.MANUAL:
+            self.hours = 58  # (12 + 16 + 1) * 2
+        elif program == Program.AUTO:
+            self.hours = 56  # (11 + 16 + 1) * 2
+
         self.program = program
 
         self.group_: typing.Union[Group, None] = None
         self.teacher_ = None
         self.lessons_: typing.List[Lesson] = []  # planned drive lessons
 
-        self.uuid_ = str(uuid.uuid4())
+        self.uuid_ = self.name + '__' + str(uuid.uuid4())  # DEBUG ONLY
 
     def assign_teacher_(self, teacher: 'Teacher') -> None:
         self.teacher_ = teacher
@@ -39,10 +44,13 @@ class Group(list):
         self.examination_date = examination_date
         self.schedule_list: typing.List[date.Schedule] = []
 
-    def add_schedule(self, schedule: date.Schedule):
+    def add_schedule(self, schedule: date.Schedule) -> None:
         self.schedule_list.append(schedule)
 
-    def __repr__(self):
+    def __hash__(self) -> int:
+        return int(self.name)  # FIXME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    def __repr__(self) -> str:
         return self.name + f'({len(self)})'
 
 
@@ -83,4 +91,4 @@ class Lesson:
         student.lessons_.append(self)
 
     def __repr__(self) -> str:
-        return f'Lesson(student={self.student!r}, teacher={self.teacher!r}, interval={self.interval!r})'
+        return f'Lesson(student={self.student!r}, teacher={self.teacher!r}, interval={self.interval!r}, type={self.type!r})'

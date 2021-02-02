@@ -77,6 +77,8 @@ const FormSerializer = function(groupFormBuilder) {
 
             schedule_data['weekday'] = resolve_weekday(schedule_element);
             schedule_data['interval'] = {
+                "start_date": schedule_element.querySelector('.group__schedule-start-date-interval').value.trim(),
+                "end_date": schedule_element.querySelector('.group__schedule-end-date-interval').value.trim(),
                 "start_time": schedule_element.querySelector('.group__schedule-start-time').value.trim(),
                 "end_time": schedule_element.querySelector('.group__schedule-end-time').value.trim()
             };
@@ -86,6 +88,8 @@ const FormSerializer = function(groupFormBuilder) {
 
         this.set = function (schedule_element, value) {
             schedule_element.querySelector(`.group__schedule-weekday[value="${value['weekday']}"]`).checked = true;
+            schedule_element.querySelector('.group__schedule-start-date-interval').value = value['interval']['start_date'].trim();
+            schedule_element.querySelector('.group__schedule-end-date-interval').value = value['interval']['end_date'].trim();
             schedule_element.querySelector('.group__schedule-start-time').value = value['interval']['start_time'].trim();
             schedule_element.querySelector('.group__schedule-end-time').value = value['interval']['end_time'].trim();
         }

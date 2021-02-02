@@ -12,12 +12,21 @@ def time_interval_intersects(
     return (time_start_a < time_start_b < time_end_a) or (time_start_b < time_start_a < time_end_b)  # todo test
 
 
+class DateInterval:
+    def __init__(self, start: datetime.date, end: datetime.date):
+        self.start = start
+        self.end = end
+
+    def __repr__(self) -> str:
+        return self.start.strftime('%Y-%m-%d - ') + self.end.strftime('%Y-%m-%d')
+
+
 class DateTimeInterval:
     def __init__(self, start: datetime.datetime, end: datetime.datetime):
         self.start = start
         self.end = end
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.start.strftime('%Y-%m-%d (%H:%M-') + self.end.strftime('%H:%M)')
 
 
@@ -26,28 +35,30 @@ class TimeInterval:
         self.start_time = datetime.datetime.strptime(start, '%H:%M')
         self.end_time = datetime.datetime.strptime(end, '%H:%M')
 
+    def __repr__(self) -> str:
+        return f'TimeInterval(start_time={self.start_time.strftime("%H:%M")!r}, end_time={self.end_time.strftime("%H:%M")!r})'
+
 
 class Schedule:
-    def __init__(self, day: int, interval: TimeInterval):
+    def __init__(self, day: int, time_interval: TimeInterval, date_interval: DateInterval):
         self.weekday: int = day
-        self.interval: TimeInterval = interval
+        self.time_interval: TimeInterval = time_interval
+
+        # Date interval when this schedule should be respected
+        self.date_interval: DateInterval = date_interval
+
+    def __repr__(self) -> str:
+        return f'Schedule(weekday={self.weekday!r}, time_interval={self.time_interval!r}, date_interval={self.date_interval!r})'
 
 
 def create_interval(day_date: datetime.datetime, start_time: str, end_time: str) -> DateTimeInterval:
     start_time_ = datetime.datetime.strptime(start_time, '%H:%M')
     end_time_ = datetime.datetime.strptime(end_time, '%H:%M')
 
-    lesson_start_datetime = day_date.replace(
-        hour=start_time_.hour,
-        minute=start_time_.minute,
-    )
-
-    lesson_end_datetime = day_date.replace(
-        hour=end_time_.hour,
-        minute=end_time_.minute,
-    )
+    start_datetime = day_date.replace(hour=start_time_.hour, minute=start_time_.minute)
+    end_datetime = day_date.replace(hour=end_time_.hour, minute=end_time_.minute)
 
     if end_time == '00:00':
-        lesson_end_datetime += datetime.timedelta(days=1)
+        end_datetime += datetime.timedelta(days=1)
 
-    return DateTimeInterval(start=lesson_start_datetime, end=lesson_end_datetime)
+    return DateTimeInterval(start=start_datetime, end=end_datetime)

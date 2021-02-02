@@ -1,5 +1,5 @@
 const Application = function () {
-    const api_url = './api/report/lesson-schedule';
+    const api_url = './api/report/practice-lesson-schedule';
 
     // initialize dependencies. todo: use DI instead
     const formBuilder = new FormBuilder();

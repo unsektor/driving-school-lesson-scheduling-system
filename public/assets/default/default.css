@@ -1,92 +1,86 @@
+@import "style.css";
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .body {
-    font-size: 11px;
-    font-family: 'Arial', sans-serif;
+  font-size: 11px;
+  font-family: "Arial", sans-serif;
 }
-
-
-.application {}
-.application__submit {}
-
 
 .weekend {
-    width: 100%;
-    min-height: 10em;
+  width: 100%;
+  min-height: 10em;
 }
 
+.group__student-manual-count {
+  width: 100%;
+}
 
-.teacher {}
-.teacher__count {}
-.teacher__max-lessons-per-day {}
+.group__student-auto-count {
+  width: 100%;
+}
 
+.group__add {
+  display: block;
+  margin-bottom: 5px;
+}
 
-.group-container {}
-
-.group { margin-bottom: 5px }
-.group__name {}
-.group__start-date {}
-.group__student-manual-count { width: 100% }
-.group__student-auto-count { width: 100% }
-
-.group__add { display: block ; margin-bottom: 5px }
-.group__remove {}
-
-.group__schedule-list {}
-
-.group__schedule-table {}
 .group__schedule {
-    display: inline-block;
-    padding-right: 10px;
+  display: inline-block;
+  padding-right: 10px;
 }
 
-.group__schedule-weekday { }
-.group__schedule-table { margin-bottom: 5px } 
+.group__schedule-table {
+  margin-bottom: 5px;
+}
 
-.group__schedule-table label /* fixme */ { display: block; }
-.group__schedule-start-time {}
-.group__schedule-end-time {}
+.group__schedule-table label {
+  display: block;
+}
 
 .group__schedule-add {
-    display: block;
-    margin-bottom: 5px;
+  display: block;
+  margin-bottom: 5px;
 }
-.group__schedule-remove {}
 
+.schedule-type label {
+  display: block;
+}
 
-.schedule-type {}
-.schedule-type /* fixme */ label { display: block; }
-.schedule-type__type {}
-
-.schedule {}
 .schedule__month {
-     margin: 10px 0;
+  margin: 10px 0;
 }
-
+.schedule__month td {
+  padding: 0;
+}
+.schedule__date-interval {
+  padding: 5px !important;
+}
 
 /* old shit */
-
-
 table {
-    border: 1px solid #aaa;
-    border-collapse: collapse;
-    /* margin-bottom: 10px; */
+  border: 1px solid #aaa;
+  border-collapse: collapse;
+  /* margin-bottom: 10px; */
 }
 
-fieldset { margin-bottom: 10px }
+fieldset {
+  margin-bottom: 10px;
+}
 
 table td {
-    border: 1px solid #aaa;
-    vertical-align: top;
-    padding: 5px;
+  border: 1px solid #aaa;
+  vertical-align: top;
+  padding: 5px;
 }
 
 table table {
-    width: 100%;
+  width: 100%;
 }
 
-input[type="text"], input[type="number"] {
-    width: 100%;
+input[type=text], input[type=number] {
+  width: 100%;
 }
+
+/*# sourceMappingURL=default.css.map */

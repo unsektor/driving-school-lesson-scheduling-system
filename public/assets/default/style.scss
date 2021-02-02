@@ -1,0 +1,98 @@
+.schedule {
+  &__month {
+    thead td {
+      padding: 5px;
+      font-weight: bold;
+    }
+
+    tbody td {
+      font-size: 0;
+    }
+  }
+
+  &__date-interval {
+    font-weight: bold;
+    padding: 5px;
+    font-size: 1em !important;
+  }
+
+  &__weekend {
+    background-color: #f8518c;
+  }
+}
+
+.lesson {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  font-size: 12px;
+
+  color: #fff;
+  text-shadow: 1px 0 0 rgba(0, 0, 0, .6);
+
+  &_type {
+    &_theory {}
+    &_ring {}
+    &_city {}
+    &_internal_examination {
+      background: #333 !important;
+      color: #fff;
+    }
+  }
+}
+
+.____old {
+  background: #ff9654;
+  // background: #ddd;
+}
+
+
+@mixin diagonal-dashed-gradient($color) {
+  $colorB: lighten($color, 15%);
+  $colorA: darken($color, 10%);
+  background-image: linear-gradient(
+    135deg,
+    $colorA 25%,
+    $colorB 25%,
+    $colorB 50%,
+    $colorA 50%,
+    $colorA 75%,
+    $colorB 75%,
+    $colorB 100%
+  );
+  background-size: 14.14px 14.14px;
+}
+
+.group {
+  &_number {
+    color: #fff;
+
+    $colorList:
+            #1689ce,
+            #25c3a7,
+            #fc5830,
+            #fd9640,
+            #9577cb,
+            #6e6a1f,
+            #c71a9f,
+            #15d6d0,
+            #ffee00,
+            #04b34a,
+            #03089c,
+            #9c0336,
+  ;
+
+    @each $color in $colorList {
+      $index: index($colorList, $color)-1;
+      &_#{$index} {
+        background: $color;
+        &.lesson_type_ring {
+          @include diagonal-dashed-gradient($color);
+        }
+      }
+    }
+  }
+}
+
+

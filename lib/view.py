@@ -24,6 +24,7 @@ class ViewBuilder(ViewBuilderInterface):
                     lesson.interval.end.strftime('%Y-%m-%d %H:%M:00')
                 ],
                 'type': lesson.type,
+                'group': lesson.student.group_.name,
             }))
 
         return lesson_list

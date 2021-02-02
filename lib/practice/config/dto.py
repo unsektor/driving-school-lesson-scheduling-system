@@ -9,10 +9,21 @@ class Students:
 
 
 class Schedule:
-    def __init__(self, weekday: int, start: str, end: str):
+    def __init__(
+            self,
+            weekday: int,
+            start: str,
+            end: str,
+            start_date: typing.Union[None, str],
+            end_date: typing.Union[None, str]
+    ):
         self.weekday = weekday
+
         self.start = start
         self.end = end
+
+        self.start_date = start_date
+        self.end_date = end_date
 
 
 class Group:

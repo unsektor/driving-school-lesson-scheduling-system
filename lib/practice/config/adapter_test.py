@@ -1,12 +1,12 @@
 import unittest
 import unittest.mock
 
-import config.adapter
+import practice.config.adapter
 
 
 class StudentsAdapterTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.students_adapter = config.adapter.StudentsAdapter()
+        self.students_adapter = practice.config.adapter.StudentsAdapter()
 
     def test_adapt(self):
         students = self.students_adapter.adapt(data={
@@ -28,15 +28,15 @@ class GroupAdapterTest(unittest.TestCase):
             "schedule_list": [],
         }
 
-        with unittest.mock.patch('config.adapter.StudentsAdapter') as StudentsAdapterMock, \
-             unittest.mock.patch('config.adapter.ScheduleAdapter') as ScheduleAdapterMock:
+        with unittest.mock.patch('practice.config.adapter.StudentsAdapter') as StudentsAdapterMock, \
+             unittest.mock.patch('practice.config.adapter.ScheduleAdapter') as ScheduleAdapterMock:
             students_adapter = StudentsAdapterMock.return_value
             students_adapter.adapt.return_value = []
 
             schedule_adapter = ScheduleAdapterMock.return_value
             schedule_adapter.adapt.return_value = []
 
-            group_adapter = config.adapter.GroupAdapter()
+            group_adapter = practice.config.adapter.GroupAdapter()
             group = group_adapter.adapt(data=data)
 
             self.assertEqual(group.name, "42x")
