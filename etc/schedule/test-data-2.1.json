@@ -1,0 +1,274 @@
+{
+  "weekend": [
+    "2019-01-01",
+    "2019-01-02",
+    "2019-01-03",
+    "2019-01-04",
+    "2019-01-05",
+    "2019-01-06",
+    "2019-01-07",
+    "2019-01-08"
+  ],
+  "teacher": {
+    "count": 7,
+    "max_lessons_per_day": 3
+  },
+  "groups": [
+    {
+      "name": "13B",
+      "date_start": "2019-06-25",
+      "examination_date": "2019-09-25",
+      "students": {
+        "manual": [
+          "13B_M_1",
+          "13B_M_2",
+          "13B_M_3",
+          "13B_M_4",
+          "13B_M_5",
+          "13B_M_6",
+          "13B_M_7",
+          "13B_M_8",
+          "13B_M_9",
+          "13B_M_10",
+          "13B_M_11",
+          "13B_M_12",
+          "13B_M_13"
+        ],
+        "auto": [
+          "13B_A_0",
+          "13B_A_1",
+          "13B_A_2"
+        ]
+      },
+      "schedule": [
+        {
+          "weekday": 1,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 3,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 5,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        }
+      ]
+    },
+    {
+      "name": "14B",
+      "date_start": "2019-07-25",
+      "examination_date": "2019-10-25",
+      "students": {
+        "manual": [
+          "14B_M_1",
+          "14B_M_2",
+          "14B_M_3",
+          "14B_M_4",
+          "14B_M_5",
+          "14B_M_6",
+          "14B_M_7",
+          "14B_M_8",
+          "14B_M_9",
+          "14B_M_10",
+          "14B_M_11"
+        ],
+        "auto": [
+          "14B_A_0",
+          "14B_A_1",
+          "14B_A_2",
+          "14B_A_3"
+        ]
+      },
+      "schedule": [
+        {
+          "weekday": 1,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 3,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 5,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        }
+      ]
+    },
+    {
+      "name": "15B",
+      "date_start": "2019-09-04",
+      "examination_date": "2019-11-04",
+      "students": {
+        "manual": [
+          "15B_M_1",
+          "15B_M_2",
+          "15B_M_3",
+          "15B_M_4",
+          "15B_M_5",
+          "15B_M_6",
+          "15B_M_7",
+          "15B_M_8",
+          "15B_M_9",
+          "15B_M_10"
+        ],
+        "auto": [
+          "15B_A_0",
+          "15B_A_1",
+          "15B_A_2"
+        ]
+      },
+      "schedule": [
+        {
+          "weekday": 0,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 2,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 4,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        }
+      ]
+    },
+    {
+      "name": "16B",
+      "date_start": "2019-10-12",
+      "examination_date": "2020-01-12",
+      "students": {
+        "manual": [
+          "16B_M_1",
+          "16B_M_2",
+          "16B_M_3",
+          "16B_M_4",
+          "16B_M_5",
+          "16B_M_6",
+          "16B_M_7",
+          "16B_M_8",
+          "16B_M_9",
+          "16B_M_10",
+          "16B_M_11"
+        ],
+        "auto": [
+          "16B_A_0",
+          "16B_A_1",
+          "16B_A_2",
+          "16B_A_3",
+          "16B_A_4",
+          "16B_A_5"
+        ]
+      },
+      "schedule": [
+        {
+          "weekday": 0,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 2,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 4,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 5,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        }
+      ]
+    },
+    {
+      "name": "17B",
+      "date_start": "2019-11-09",
+      "examination_date": "2020-02-09",
+      "students": {
+        "manual": [
+          "17B_M_1",
+          "17B_M_2",
+          "17B_M_3",
+          "17B_M_4",
+          "17B_M_5",
+          "17B_M_6",
+          "17B_M_7",
+          "17B_M_8",
+          "17B_M_9"
+        ],
+        "auto": [
+          "17B_A_0",
+          "17B_A_1"
+        ]
+      },
+      "schedule": [
+        {
+          "weekday": 1,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 3,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 5,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        },
+        {
+          "weekday": 6,
+          "interval": {
+            "start_time": "08:00",
+            "end_time": "11:15"
+          }
+        }
+      ]
+    }
+  ]
+}

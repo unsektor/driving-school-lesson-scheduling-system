@@ -86,7 +86,7 @@ const TeacherScheduleRender = function () {
                     if (lesson.type === RING_LESSON_TYPE) {
                         class_ += ' lesson_type_ring ';
                     } else if (lesson.type === CITY_LESSON_TYPE) {
-                        // class_ += ' lesson_type_city ';
+                        class_ += ' lesson_type_city ';
                     } else if (lesson.type === INTERNAL_EXAMINATION_LESSON_TYPE) {
                         class_ += ' lesson_type_internal_examination '
                     }

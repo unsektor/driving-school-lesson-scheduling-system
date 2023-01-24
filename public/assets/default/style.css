@@ -1,0 +1,123 @@
+.schedule__month thead td {
+  padding: 5px;
+  font-weight: bold;
+}
+.schedule__month tbody td {
+  font-size: 0;
+}
+.schedule__date-interval {
+  font-weight: bold;
+  padding: 5px;
+  font-size: 1em !important;
+}
+.schedule__weekend {
+  background-color: #f8518c;
+}
+
+.lesson {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  font-size: 12px;
+  color: #fff;
+  text-shadow: 1px 0 0 rgba(0, 0, 0, 0.6);
+}
+.lesson_type_internal_examination {
+  background: #333 !important;
+  color: #fff;
+}
+
+.____old {
+  background: #ff9654;
+}
+
+.group_number {
+  color: #fff;
+}
+.group_number_0 {
+  background: #1689ce;
+}
+.group_number_0.lesson_type_ring {
+  background-image: linear-gradient(135deg, #116aa0 25%, #45adeb 25%, #45adeb 50%, #116aa0 50%, #116aa0 75%, #45adeb 75%, #45adeb 100%);
+  background-size: 14.14px 14.14px;
+}
+.group_number_1 {
+  background: #25c3a7;
+}
+.group_number_1.lesson_type_ring {
+  background-image: linear-gradient(135deg, #1d9882 25%, #56dfc7 25%, #56dfc7 50%, #1d9882 50%, #1d9882 75%, #56dfc7 75%, #56dfc7 100%);
+  background-size: 14.14px 14.14px;
+}
+.group_number_2 {
+  background: #fc5830;
+}
+.group_number_2.lesson_type_ring {
+  background-image: linear-gradient(135deg, #f53304 25%, #fd957b 25%, #fd957b 50%, #f53304 50%, #f53304 75%, #fd957b 75%, #fd957b 100%);
+  background-size: 14.14px 14.14px;
+}
+.group_number_3 {
+  background: #fd9640;
+}
+.group_number_3.lesson_type_ring {
+  background-image: linear-gradient(135deg, #fc7a0e 25%, #fec08c 25%, #fec08c 50%, #fc7a0e 50%, #fc7a0e 75%, #fec08c 75%, #fec08c 100%);
+  background-size: 14.14px 14.14px;
+}
+.group_number_4 {
+  background: #9577cb;
+}
+.group_number_4.lesson_type_ring {
+  background-image: linear-gradient(135deg, #7852bd 25%, #c0aee0 25%, #c0aee0 50%, #7852bd 50%, #7852bd 75%, #c0aee0 75%, #c0aee0 100%);
+  background-size: 14.14px 14.14px;
+}
+.group_number_5 {
+  background: #6e6a1f;
+}
+.group_number_5.lesson_type_ring {
+  background-image: linear-gradient(135deg, #464414 25%, #aaa430 25%, #aaa430 50%, #464414 50%, #464414 75%, #aaa430 75%, #aaa430 100%);
+  background-size: 14.14px 14.14px;
+}
+.group_number_6 {
+  background: #c71a9f;
+}
+.group_number_6.lesson_type_ring {
+  background-image: linear-gradient(135deg, #9a147b 25%, #e747c2 25%, #e747c2 50%, #9a147b 50%, #9a147b 75%, #e747c2 75%, #e747c2 100%);
+  background-size: 14.14px 14.14px;
+}
+.group_number_7 {
+  background: #15d6d0;
+}
+.group_number_7.lesson_type_ring {
+  background-image: linear-gradient(135deg, #10a8a3 25%, #4aede8 25%, #4aede8 50%, #10a8a3 50%, #10a8a3 75%, #4aede8 75%, #4aede8 100%);
+  background-size: 14.14px 14.14px;
+}
+.group_number_8 {
+  background: #ffee00;
+}
+.group_number_8.lesson_type_ring {
+  background-image: linear-gradient(135deg, #ccbe00 25%, #fff34d 25%, #fff34d 50%, #ccbe00 50%, #ccbe00 75%, #fff34d 75%, #fff34d 100%);
+  background-size: 14.14px 14.14px;
+}
+.group_number_9 {
+  background: #04b34a;
+}
+.group_number_9.lesson_type_ring {
+  background-image: linear-gradient(135deg, #038135 25%, #0afa6a 25%, #0afa6a 50%, #038135 50%, #038135 75%, #0afa6a 75%, #0afa6a 100%);
+  background-size: 14.14px 14.14px;
+}
+.group_number_10 {
+  background: #03089c;
+}
+.group_number_10.lesson_type_ring {
+  background-image: linear-gradient(135deg, #02056a 25%, #040ce7 25%, #040ce7 50%, #02056a 50%, #02056a 75%, #040ce7 75%, #040ce7 100%);
+  background-size: 14.14px 14.14px;
+}
+.group_number_11 {
+  background: #9c0336;
+}
+.group_number_11.lesson_type_ring {
+  background-image: linear-gradient(135deg, #6a0225 25%, #e70450 25%, #e70450 50%, #6a0225 50%, #6a0225 75%, #e70450 75%, #e70450 100%);
+  background-size: 14.14px 14.14px;
+}
+
+/*# sourceMappingURL=style.css.map */

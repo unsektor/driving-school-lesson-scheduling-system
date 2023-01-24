@@ -19,7 +19,7 @@ import theory.report
 import theory.report.lesson_schedule
 
 
-def _create_lesson_schedule(data: dict):
+def _create_practice_lesson_schedule(data: dict) -> dict:
     # model
     config_adapter = practice.config.adapter.ConfigAdapter()
     config_ = config_adapter.adapt(data=data)
@@ -34,7 +34,7 @@ def _create_lesson_schedule(data: dict):
 
     def lesson_generator_() -> typing.Iterator[Lesson]:
         for teacher in teacher_list:
-            # if teacher.name != '5': continue  # FIXME !!!!!!!!!!!
+            if teacher.name != '5': continue  # FIXME !!!!!!!!!!!
 
             dto = practice.report.lesson_schedule.schedule_by_teacher(teacher=teacher, config_=config_)
             yield from dto.lesson_iterable
@@ -91,7 +91,7 @@ def report_lesson_schedule():  # controller
         return
 
     bottle.response.content_type = 'application/json; charset=utf8'
-    return json.dumps(_create_lesson_schedule(data))
+    return json.dumps(_create_practice_lesson_schedule(data))
 
 
 @bottle.post('/api/report/theory-lesson-schedule')

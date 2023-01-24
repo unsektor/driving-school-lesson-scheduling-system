@@ -1,13 +1,12 @@
 import datetime
 
-import config.dto
-import config.adapter
+import practice.config.dto
 
 from date import DateInterval, TimeInterval, Schedule
 from domain import Program, Student, Group
 
 
-def create_group(group_config: config.dto.Group) -> Group:
+def create_group(group_config: practice.config.dto.Group) -> Group:
     group_start_date = datetime.datetime.strptime(group_config.date_start, '%Y-%m-%d')
     examination_date = datetime.datetime.strptime(group_config.examination_date, '%Y-%m-%d')
     group = Group(
@@ -31,7 +30,7 @@ def create_group(group_config: config.dto.Group) -> Group:
         s = Schedule(
             day=schedule.weekday,
             time_interval=TimeInterval(start=schedule.start, end=schedule.end),
-             date_interval=DateInterval(start=date_start.date(), end=date_end.date())
+            date_interval=DateInterval(start=date_start.date(), end=date_end.date())
         )
         group.add_schedule(s)
 
