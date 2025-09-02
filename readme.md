@@ -3,6 +3,15 @@
 - Homepage: [проекты.md.land / планировщик занятий автошколы](https://проекты.md.land/планировщик-занятий-автошколы)
 - Live demo: [проекты.md.land / планировщик занятий автошколы / live](https://проекты.md.land/планировщик-занятий-автошколы/live)
 
+<details>
+  <summary>Простой пример</summary>
+
+![Простой пример](docs/_static/app.ui.basic.png)
+
+</details>
+
+[Сложный пример](docs/_static/app.ui.advanced.png) 
+
 ---
 
 Система планирования расписания практических занятий автошколы 
@@ -10,8 +19,7 @@
 
 - начало практических занятий на площадке через неделю после первого 
   теоритического занятия группы
-- 11 занятий для ученика программы (автомат), 12 — программы (
-- механика)    
+- 11 занятий для ученика программы (автомат), 12 — программы (механика)    
 - не более трёх занятий в день для одного инструктора
 - планирование последнего занятия в городе для учеников одной группы 
   на день внутреннего экзамена группы
@@ -22,8 +30,8 @@
 
 - чередовать две группы по занятиям на площадке
   - для каждой группы нужно указывать такой день
-+ для одного инструктора не больше 6 человек из одной группы
-+ нужно учитывать что если в день занятий - площадка,
+- для одного инструктора не больше 6 человек из одной группы
+- нужно учитывать что если в день занятий - площадка,
   то череда занятий (площадка / город / площадка) может быть невозможной
 - выполнить проверку что дата экзамена не выпадает на праздники
 
@@ -53,20 +61,35 @@
 - python 3.6 / bottle / uwsgi 
 - html / js / css
 
-## Installation
+## Usage
 
-```bash
+Docker way:
+
+```sh
+HTTP_PORT=8001 docker compose up
+# open http://localhost:8001
+```
+
+---
+
+Native way:
+
+```sh
 pip install -r requirements.txt
 ```
 
-### OS X
+<details>
+  <summary>nginx & uwsgi install</summary>
 
-```bash
+```sh
+# example for macos:
 brew install nginx uwsgi
 ```
 
-### Configuration
-#### nginx
+</details>
+
+<details>
+  <summary>nginx configuration example</summary>
 
 ```
 upstream uwsgi_app {
@@ -92,8 +115,12 @@ server {
   }
 }
 ```
- 
-#### uWSGI
+
+</details>
+
+
+<details>
+  <summary>uWSGI</summary>
 
 ```ini
 [uwsgi]
@@ -107,9 +134,11 @@ callable = app
 manage-script-name = true
 ```
 
-### Start
+</details>
 
-```bash
+Run:
+
+```sh
 uwsgi --ini /usr/local/etc/uwsgi/app.ini
 nginx
 ```
